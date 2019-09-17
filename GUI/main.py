@@ -11,8 +11,10 @@ Created on Aug 13, 2014
 '''
 import gtk
 import time
+#import glib #used to continously update GUI objects
 
 import Communications
+import simulate
 import gui_support
 from gui_support import GuiSupport
 import threading
@@ -66,6 +68,19 @@ class CrawlerGUI(GuiSupport):
         self.DirXComboHandle = gui_support.GsComboBox(self.builder,'DirX',xdirection_combo_options)
         self.DirYComboHandle = gui_support.GsComboBox(self.builder,'DirY',ydirection_combo_options)
         self.DirZComboHandle = gui_support.GsComboBox(self.builder,'DirZ',zdirection_combo_options)
+
+        #labels
+        self.batteryLevel       = self.builder.get_object('label24')
+        self.distanceTraveled       = self.builder.get_object('label34')
+        self.encoder1 = self.builder.get_object('label35')
+        self.encoder2 = self.builder.get_object('label36')
+        self.encoder3 = self.builder.get_object('label37')
+        self.encoder4 = self.builder.get_object('label38')
+
+        #toggle buttons
+        self.toggleAutonomous = self.builder.get_object('togglebutton9')
+        self.toggleSemiAuto = self.builder.get_object('togglebutton10')
+        self.toggleManual = self.builder.get_object('togglebutton11')
         
         #text box objects
         self.StepNumZ       = self.builder.get_object('StepNumZ')
@@ -84,15 +99,24 @@ class CrawlerGUI(GuiSupport):
         self.speed_start    = self.builder.get_object('speed_start')
         self.speed_change   = self.builder.get_object('speed_change')                                                
 
-        #slider objects
-        self.inclineLeftRight   = self.builder.get_object('vscale1')
+        #slider, aka scale objects
+        self.inclineLeftRight       = self.builder.get_object('hscale1')
+        self.inclineFrontBack       = self.builder.get_object('vscale1')
+        self.movementLeftRight      = self.builder.get_object('hscale2')
+        self.movementReverseForward = self.builder.get_object('hscale3')
+        
         self.inclineLeftRight.set_digits(2)#sets number of display percisions
+        #self.inclineLeftRight.set_has_origin(True)#this does not work
         
         #self.inclineLeftRight.set_fill_level(float(12345))
         #self.inclineLeftRight.set_vexpand(True)
-        self.inclineLeftRight   = self.builder.get_object('hscale1')
+        #self.inclineLeftRight   = self.builder.get_object('hscale1')
         #self.inclineLeftRight.set_digits()
-        self.inclineLeftRight.set_fill_level(float(12345))
+        
+        #self.inclineLeftRight.set_fill_level(float(12345))
+        #self.inclineLeftRight.set_value_pos(9)#not sure what this does
+        #self.inclineLeftRight.set_value(0)#this works to set value of scale
+        
         #self.inclineLeftRight.set_vexpand(True)        
 
         
@@ -108,8 +132,35 @@ class CrawlerGUI(GuiSupport):
         self.window.show()
         self.comthread = None
 
+        gobject.timeout_add(1000,self.simulate_accelerometer)
+
 
     ###################### Actions for all signals#########################
+    def on_togglebutton9_toggled(self,widget):
+        autonomous = self.toggleAutonomous.get_active()
+        semiauto = self.toggleSemiAuto.get_active()
+        manual = self.toggleManual.get_active()
+        if autonomous == True:
+            self.toggleManual.set_active(False)
+            self.toggleSemiAuto.set_active(False)
+        
+    def on_togglebutton10_toggled(self,widget):
+        autonomous = self.toggleAutonomous.get_active()
+        semiauto = self.toggleSemiAuto.get_active()
+        manual = self.toggleManual.get_active()
+        if semiauto == True:
+            self.toggleAutonomous.set_active(False)
+            self.toggleManual.set_active(False)
+
+
+    def on_togglebutton11_toggled(self,widget):
+        autonomous = self.toggleAutonomous.get_active()
+        semiauto = self.toggleSemiAuto.get_active()
+        manual = self.toggleManual.get_active()
+        if manual == True:
+            self.toggleAutonomous.set_active(False)
+            self.toggleSemiAuto.set_active(False)
+        
     def on_reverse_x_toggled(self,widget, data = None):
         '''
         if reversed check box is toggled,
@@ -373,6 +424,30 @@ class CrawlerGUI(GuiSupport):
         self.axis_x.pulse_width_high = int(self.pulsewidth_x_h.get_text())
         self.axis_x.pulse_width_low = int(self.pulsewidth_x_l.get_text())
 
+    def simulate_accelerometer(self):
+        print 'simulating accelerometer'
+        self.inclineLeftRight.set_value(simulate.accelerometer_x)
+        self.inclineFrontBack.set_value(simulate.accelerometer_y)
+        self.movementLeftRight.set_value(simulate.movement_turn)
+        self.movementReverseForward.set_value(simulate.movement_forward)
+        self.batteryLevel.set_text(str(simulate.battery_level))
+        self.distanceTraveled.set_text(str(simulate.distance_traveled))
+        
+        #where 4 is the number of magnets embedded inside on the tire hub
+        self.encoder1.set_text(str(simulate.distance_traveled*4))
+        self.encoder2.set_text(str(simulate.distance_traveled*4))
+        self.encoder3.set_text(str(simulate.distance_traveled*4))
+        self.encoder4.set_text(str(simulate.distance_traveled*4))
+        
+        #print 'set value to :',simulate.accelerometer_x
+        gobject.timeout_add(500,self.simulate_accelerometer)
+
+##    def launch_worker_thread(self):
+##        self.worker_thread = threading.Thread(target=do_work, args=(self.com_queue,))
+##        self.worker_thread.start()
+##        Glib.timeout_add(1000, self.check_queue) # run check_queue every 1 second
+##
+
 if __name__ == "__main__":
     print 'starting crawler GUI'
     #start communication for reading and writing
@@ -382,6 +457,11 @@ if __name__ == "__main__":
     comthreadReader = threading.Thread(target = Communications.set_reader)
     comthreadReader.daemon = True #terminate when program ends
     comthreadReader.start()
+
+    #used for Demonstrating GUI operation
+    simulator = threading.Thread(target = simulate.simulate_data)
+    simulator.daemon = True #terminate when program ends
+    simulator.start()
 
     
     #GUI thread    
