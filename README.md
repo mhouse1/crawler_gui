@@ -14,3 +14,12 @@
 * Test Page
 ![Test Page](https://github.com/mhouse1/crawler_gui/blob/master/Documentation/GUI_View4.PNG)
 
+
+SSH using PuTTY defaul
+Host Name: raspberrypi
+Port: 22
+Connection Type: SSH
+Click Open
+Login as: pi
+Password: raspberry
+
