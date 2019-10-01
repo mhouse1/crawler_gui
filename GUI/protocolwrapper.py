@@ -261,7 +261,7 @@ if __name__ == '__main__':
     pw = ProtocolWrapper()
     fields = ['cfdata', 'StepNumX', '2000']
     msg_encodded = pw.wrapfieldscrc(fields)
-    print 'encoded = ',msg_encodded
+    print ('encoded = ',msg_encodded)
     #encoded =  [#[F709D151#]#[###[cfdata###]###[StepNumX###]###[2000###]#]]
     
 #     '''example use

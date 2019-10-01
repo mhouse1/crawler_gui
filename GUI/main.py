@@ -1,28 +1,11 @@
-'''
-Created on Aug 13, 2014
-
-@author: Mike
-
-@details    GUI interface allowing user to:
-                configure pulse width for each axis
-                jog the X, Y, Z axis or jog XY axis at the same time
-                transmit parsed gcode to firmware for routing, start
-                pause and clear route planned.
-'''
-import gtk
+import threading
 import time
-#import glib #used to continously update GUI objects
 
-import Communications
-import simulate
+from gi.repository import GLib, Gtk, GObject
+
 import gui_support
 from gui_support import GuiSupport
-import threading
-import multiprocessing
-import gobject
-
-#Allow only the main thread to touch the GUI (gtk) part, while letting other threads do background work.
-gobject.threads_init()
+import simulate
 
 class CrawlerGUI(GuiSupport):    
     def __init__(self):
@@ -36,10 +19,9 @@ class CrawlerGUI(GuiSupport):
         #build the gui interface using xml file
         #connect gui signals to call back functions
         self.gladefile = "Crawler.glade"
-        self.builder = gtk.Builder()
+        self.builder = Gtk.Builder()
         self.builder.add_from_file(self.gladefile)
         self.builder.connect_signals(self)
-
 
         #use builder object to get a handle to configuration file
         self.cfg_file_handle  = gui_support.CfgFile(self.builder)
@@ -126,13 +108,13 @@ class CrawlerGUI(GuiSupport):
         #set current gcode file to whatever file path is 
         #displayed in the GCode file path text box
         self.set_gcode_file()
+
+      
         
         #show the GUI window
         self.window = self.builder.get_object("window1")
         self.window.show()
         self.comthread = None
-
-        gobject.timeout_add(1000,self.simulate_accelerometer)
 
 
     ###################### Actions for all signals#########################
@@ -199,7 +181,7 @@ class CrawlerGUI(GuiSupport):
         dummy button: use this to run whatever code you wish
         '''
         #print how many items are left in slow_queue
-        print Communications.slow_queue.qsize(),' in slow queue'
+        print (Communications.slow_queue.qsize(),' in slow queue')
     
     def on_set_acceleration_clicked(self,widget):
         '''
@@ -319,15 +301,15 @@ class CrawlerGUI(GuiSupport):
         
         #do a wait count down before routing
         for i in xrange(3):
-            print 'starting in:',3-i
+            print ('starting in:',3-i)
             time.sleep(1)
             
-        print 'Transfer Coord button activated'
+        print ('Transfer Coord button activated')
         self.start_routing()
         
         self.gs_feed_cut = int(self.feed_cut.get_text())
         self.set_feed()
-        print 'scale is ',int(self.gcode_scale.get_text())
+        print ('scale is ',int(self.gcode_scale.get_text()))
         self.send_coordinates(int(self.gcode_scale.get_text()))
         #gui_support.send_file(self.GTKGCode_File.get_text())
         
@@ -359,20 +341,20 @@ class CrawlerGUI(GuiSupport):
         '''
         self.tab = notebook.get_nth_page(page_num)
         self.switched_page = notebook.get_tab_label(self.tab).get_label()
-        print 'switched to page ',self.switched_page
+        print ('switched to page ',self.switched_page)
     
     def on_Quit_activate(self,widget, data = None):
         '''
         exit gui and save config file
         '''
-        print 'quitting...'
+        print ('quitting...')
         self._quit_program()
     
     def on_window1_destroy(self, widget, data = None):
         '''
         exit gui and save config file
         '''
-        print 'quitting...'
+        print ('quitting...')
         self._quit_program()
     
     def set_gcode_file(self):
@@ -388,14 +370,14 @@ class CrawlerGUI(GuiSupport):
         on button press open file chooser window to allow user to select 
         gcode file to use for routing
         '''
-        print 'Browsing for GCode file'
+        print ('Browsing for GCode file')
         self.fcd = gtk.FileChooserDialog("Open...",None,gtk.FILE_CHOOSER_ACTION_OPEN,
                  (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
                   gtk.STOCK_OPEN, gtk.RESPONSE_OK))
         self.response = self.fcd.run()
         if self.response == gtk.RESPONSE_OK:
             self.gcode_file = self.fcd.get_filename()
-            print "Selected filepath: %s" % self.gcode_file
+            print ("Selected filepath: %s" % self.gcode_file)
             self.fcd.destroy()
             self.GTKGCode_File.set_text(self.gcode_file)
     
@@ -405,7 +387,7 @@ class CrawlerGUI(GuiSupport):
         save a configuration file before terminating GUI thread
         '''
         self.cfg_file_handle.save_config_file()
-        gtk.main_quit()
+        Gtk.main_quit()
         
     def _update_data(self):
         '''
@@ -425,13 +407,12 @@ class CrawlerGUI(GuiSupport):
         self.axis_x.pulse_width_low = int(self.pulsewidth_x_l.get_text())
 
     def simulate_accelerometer(self):
-        print 'simulating accelerometer'
-        self.inclineLeftRight.set_value(simulate.accelerometer_x)
-        self.inclineFrontBack.set_value(simulate.accelerometer_y)
+        #self.inclineLeftRight.set_value(simulate.accelerometer_x)
+        #self.inclineFrontBack.set_value(simulate.accelerometer_y)
         self.movementLeftRight.set_value(simulate.movement_turn)
-        self.movementReverseForward.set_value(simulate.movement_forward)
+        #self.movementReverseForward.set_value(simulate.movement_forward)
         self.batteryLevel.set_text(str(simulate.battery_level))
-        self.distanceTraveled.set_text(str(simulate.distance_traveled))
+        #self.distanceTraveled.set_text(str(simulate.distance_traveled))
         
         #where 4 is the number of magnets embedded inside on the tire hub
         self.encoder1.set_text(str(simulate.distance_traveled*4))
@@ -439,31 +420,51 @@ class CrawlerGUI(GuiSupport):
         self.encoder3.set_text(str(simulate.distance_traveled*4))
         self.encoder4.set_text(str(simulate.distance_traveled*4))
         
-        #print 'set value to :',simulate.accelerometer_x
-        gobject.timeout_add(500,self.simulate_accelerometer)
+##        #print 'set value to :',simulate.accelerometer_x
+        GObject.timeout_add(500,self.simulate_accelerometer)
 
 ##    def launch_worker_thread(self):
 ##        self.worker_thread = threading.Thread(target=do_work, args=(self.com_queue,))
 ##        self.worker_thread.start()
 ##        Glib.timeout_add(1000, self.check_queue) # run check_queue every 1 second
 ##
-
-if __name__ == "__main__":
-    print 'starting crawler GUI'
-    #start communication for reading and writing
-    comthreadWriter = threading.Thread(target = Communications.set_writer)
-    comthreadWriter.daemon = True #terminate thread when program ends
-    comthreadWriter.start()
-    comthreadReader = threading.Thread(target = Communications.set_reader)
-    comthreadReader.daemon = True #terminate when program ends
-    comthreadReader.start()
+        
+def app_main():
 
     #used for Demonstrating GUI operation
     simulator = threading.Thread(target = simulate.simulate_data)
     simulator.daemon = True #terminate when program ends
+    print("starting data simulation")
     simulator.start()
-
-    
-    #GUI thread    
     main = CrawlerGUI()
-    gtk.main()
+    main.simulate_accelerometer()
+ 
+
+
+##def app_main():
+##    win = Gtk.Window(default_height=50, default_width=300)
+##    win.connect("destroy", Gtk.main_quit)
+##
+##    progress = Gtk.ProgressBar(show_text=True)
+##    win.add(progress)
+##
+##    def update_progess(i):
+##        progress.pulse()
+##        progress.set_text(str(i))
+##        return False
+##
+##    def example_target():
+##        for i in range(50):
+##            GLib.idle_add(update_progess, i)
+##            time.sleep(0.2)
+##
+##    win.show_all()
+##
+##    thread = threading.Thread(target=example_target)
+##    thread.daemon = True
+##    thread.start()
+
+
+if __name__ == "__main__":
+    app_main()
+    Gtk.main()

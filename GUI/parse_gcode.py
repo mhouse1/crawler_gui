@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import math
 from numpy import double
 from decimal import Decimal #import will fail if theres a number.py in src directory
-from matplotlib.cbook import Null
+#from matplotlib.cbook import Null
 
 def enum(*sequential, **named):
     '''
@@ -33,8 +33,8 @@ def enum(*sequential, **named):
     enums['reverse_mapping'] = reverse
     return type('Enum', (), enums)
 
-router_state = enum('router_off', 'router_on', 'router_up','router_down','router_xy','router_z','cnc_pause')
-
+#router_state = enum('router_off', 'router_on', 'router_up','router_down','router_xy','router_z','cnc_pause')
+router_state = None
 def get_gcode_data(input_file = 'bridesmaid_inner_01.nc',scale=10000):
     '''
     Reads and parses gcode returns a coordinate list for calling function
@@ -125,8 +125,8 @@ def get_gcode_data(input_file = 'bridesmaid_inner_01.nc',scale=10000):
                         raise ValueError('unexpected gcode type with command z')
                     
                 else:
-                    print 'ignored:*',tokens, first_coord_type#, second_coord_type
-                    print 'line:*',line
+                    print ('ignored:*',tokens, first_coord_type)#, second_coord_type
+                    print ('line:*',line)
             elif gcode_type == 'M3' or gcode_type == 'M03':
                 coordinates.append((int(3),int(3),int(router_state.router_on)))
             elif gcode_type == 'M5' or gcode_type == 'M05':
@@ -134,7 +134,7 @@ def get_gcode_data(input_file = 'bridesmaid_inner_01.nc',scale=10000):
             elif gcode_type == 'M0' or gcode_type == 'M00':
                 coordinates.append((int(6),int(6),int(router_state.cnc_pause)))                
             else:
-                print 'ignored: ',tokens
+                print ('ignored: ',tokens)
                 if gcode_type == 'M0':
                     raw_input('detected M0 pause command')
     return coordinates
@@ -156,8 +156,8 @@ def draw_coord(coordinates):
             xmin = math.ceil(min(coordinates,key=lambda item:float(item[0]))[0])
             ymax = math.ceil(max(coordinates,key=lambda item:float(item[1]))[1])
             ymin = math.ceil(min(coordinates,key=lambda item:float(item[1]))[1])
-            print 'max found x', xmax
-            print 'max found y', ymax
+            print ('max found x', xmax)
+            print ('max found y', ymax)
             #print max(coordinates,key=lambda item:item[1])[0]
             #return 0
             border = 0.1
@@ -167,7 +167,7 @@ def draw_coord(coordinates):
         
         if tool_stat == router_state.router_xy:
             #print this and copy to c++ test code to test cnc firmware in CUTE
-            print 'machine.SetNextPosition(',x_coord,',', y_coord,');'
+            print ('machine.SetNextPosition(',x_coord,',', y_coord,');')
             
             x.append(x_coord)
             y.append(y_coord)
@@ -178,7 +178,7 @@ def draw_coord(coordinates):
         #raw_input("press enter")
         plt.pause(60)
     except:
-        print 'did you press the red x?'
+        print ('did you press the red x?')
         
 if __name__ == '__main__':
     #get a set of coordinates
@@ -191,7 +191,7 @@ if __name__ == '__main__':
     #xycoord = get_gcode_data('step_motion1.nc', scale = 1)
 
     #draw start drawing
-    print len(xycoord)
+    print( len(xycoord))
     draw_coord(xycoord)
     #print router_state.router_up
     #print router_state.reverse_mapping[1]

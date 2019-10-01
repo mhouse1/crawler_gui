@@ -13,8 +13,13 @@ import serial
 from serial.tools import list_ports
 import time
 import multiprocessing
+
+#linux
+import queue as Queue
+
 import threading
-import Queue
+#import Queue #python2
+
 #active_serial = None
 serial_activated = False
 consumer_portname = None
@@ -128,13 +133,13 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
     global com_handle
     global stop_sending
     
-    print 'waiting for serial selection'
+    print ('waiting for serial selection')
     while consumer_portname is None:
         time.sleep(1)
-        print '.',
+        print ('.',)
     com_handle = serial.Serial(port = consumer_portname,baudrate = 19200)
 
-    print 'serial activated'
+    print ('serial activated')
     
     #if fast queue is not empty then send messages in the fast queue
     #until queue is empty. The slow queue will only send messages
@@ -170,12 +175,12 @@ def set_reader():
     
         this function will be called once when the GUI first initializes
     '''
-    print 'waiting for serial selection'
+    print ('waiting for serial selection')
     global stop_sending
     while com_handle is None:
         time.sleep(1)
         #print '=',
-    print 'starting reader'
+    print ('starting reader')
     while True:
         #time.sleep(0.3)
         received = com_handle.read()
@@ -191,5 +196,5 @@ def set_reader():
 
     
 if __name__ == "__main__":
-    print show_serial_ports()
+    print (show_serial_ports())
     #transmit('hello world')

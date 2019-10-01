@@ -118,19 +118,20 @@ def crc32(data = 'D',len = 1,crc = 740712820):
 #     
     return crc;
 if __name__ == "__main__":
-    x = '[hello][world][i][am][michael]'
-    crc1 =  crc32(data = x,len = len(x))
-    print 'value of crcval is ','%x'%crc1
-    print crc1
-    crc1 =  crc32(data = 'D',len = 1,crc = crc1)
-    print 'value of crcval is ','%x'%crc1
-    print crc1
-    crc1 =  crc32(data = 'DEAD MOUSE',len = 10,crc = crc1)
-    print 'value of crcval is ','%x'%crc1
-    print crc1
-    crc1 =  crc32(data = 'D',len = 1,crc = crc1)
-    print 'value of crcval is ','%x'%crc1
-    print crc1
+    pass
+##    x = '[hello][world][i][am][michael]'
+##    crc1 =  crc32(data = x,len = len(x))
+##    print 'value of crcval is ','%x'%crc1
+##    print crc1
+##    crc1 =  crc32(data = 'D',len = 1,crc = crc1)
+##    print 'value of crcval is ','%x'%crc1
+##    print crc1
+##    crc1 =  crc32(data = 'DEAD MOUSE',len = 10,crc = crc1)
+##    print 'value of crcval is ','%x'%crc1
+##    print crc1
+##    crc1 =  crc32(data = 'D',len = 1,crc = crc1)
+##    print 'value of crcval is ','%x'%crc1
+##    print crc1
     
     #output from console
 #value of crcval is  14524a2b

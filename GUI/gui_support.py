@@ -8,9 +8,13 @@ Created on Aug 24, 2014
           All the communication is sent via a parallel process that is launched when the user
           configures the communication port.
 '''
-import gtk
+#import gtk
+from gi.repository import GLib, Gtk, GObject
+
 import os
-import ConfigParser
+import configparser as ConfigParser #python 3 support
+#import ConfigParser #python 2 support
+
 import sys
 
 import protocolwrapper
@@ -131,7 +135,7 @@ class GuiSupport(object):
         #verify length of payload matches the specified length
         
         if not payload_len== received_payload_len:
-            print 'specified payload {} does not match recevied payload size {}'.format(payload_len,received_payload_len)
+            print ('specified payload {} does not match recevied payload size {}'.format(payload_len,received_payload_len))
         full_command_bin = cmd_num + cmd_len + payload #build full binary string
         hex_fill = '{0:0>'+str(len(full_command_bin)/4)+'}'
         #print '%x'% int(full_command_bin,2)
@@ -150,7 +154,7 @@ class GuiSupport(object):
         Communications.transmit(full_command_hex.decode('hex'), queue_priority)
         
     def quit(self):
-        print 'closed handle'
+        print( 'closed handle')
         self._send_handle.close()
         sys.exit()
 
@@ -243,7 +247,7 @@ class GuiSupport(object):
 #             #print % progress of putting coordinates in queue
 #             if str(idx)[-1] == '0':
 #                 print "\r{0}".format((float(idx)/total_num_coordinates)*100),
-        print 'finished putting coordinates in queue'
+        print ('finished putting coordinates in queue')
 
 class CfgFile:
     ''' manages a GUI configuration file 
@@ -274,7 +278,7 @@ class CfgFile:
         config_object.add_section('settings')
         config_object.write(f)
         f.close()
-        print 'created Kshatria config file'
+        print ('created config file')
         
     def save_config_file(self):
         #self.config_object.set('settings', 'g-code file','none')
@@ -284,15 +288,15 @@ class CfgFile:
             if obj.__class__.__name__ == 'Entry':
                 try:
                     self.config_object.set('settings', item,obj.get_text())
-                except Exception, err:
-                    print err
+                except Exception as  err:
+                    print (err)
             elif obj.__class__.__name__ == 'CheckButton':
                 try:
                     self.config_object.set('settings', item,obj.get_active())
-                except Exception, err:
-                    print err     
+                except Exception as err:
+                    print (err   )  
         self.config_object.write(open(self.config_file_name,'w'))
-        print 'saved Kshatria config file'
+        print( 'saved  config file')
         
     def load_settings(self):
         '''create and fill config file if it does not exist
@@ -313,19 +317,19 @@ class CfgFile:
             if obj.__class__.__name__ == 'Entry':
                 if item == 'GCode_File_Location':
                     self.gcode_file = self.config_object.get('settings', item)
-                    print 'set gcode file to ',self.gcode_file
+                    print ('set gcode file to ',self.gcode_file)
                 try:
                     obj.set_text(self.config_object.get('settings', item))
-                except Exception, err:
-                    print err
+                except Exception as err:
+                    print( err)
             elif obj.__class__.__name__ == 'CheckButton':
                 try:
                     obj.set_active( 1 if 'True' == self.config_object.get('settings',item ) else 0)
-                except Exception, err:
-                    print err     
+                except Exception as err:
+                    print (err   )  
         #self.GTKGCode_File.set_text(self.config_object.get('settings', 'g-code file'))
 
-        print 'loaded Kshatria config file'
+        print( 'loaded Kshatria config file')
 
 class SendSinleCFData:
     def __init__(self,builder,cfg_file_handle):
@@ -333,7 +337,7 @@ class SendSinleCFData:
         
     def send(self,widget):
         fields = [self.classification,'RouterPWM',widget.get_text()]#,item.get_text()]
-        print fields
+        print (fields)
         Communications.transmit(framer.wrapfieldscrc(fields))
         
 class CncCommand:
@@ -422,7 +426,7 @@ class CfgData:
 
     def unpack(self):
         pw = protocolwrapper.ProtocolWrapper()
-        print 'Erase FIFO button activated'
+        print ('Erase FIFO button activated')
 #         while Communications.active_serial.inWaiting():
 #             #if there are BytesInBuffer then read one byte   
 #             #read one byte 
@@ -487,7 +491,7 @@ def send_file(filename):
 def get_com_port_list():
     
     #create an instance of Liststore with data
-    liststore = gtk.ListStore(int,str)
+    liststore = Gtk.ListStore(int,str)
     Com_List = Communications.list_serial_ports()
     liststore.append([0,"Select a valid serial port:"])
     for port_number in range(len(Com_List)):
@@ -509,7 +513,7 @@ class ComCombo:
         
         
         #create an instance of the gtk CellRendererText object and pack into
-        self.cell = gtk.CellRendererText()
+        self.cell = Gtk.CellRendererText()
         self.Com_channel_combo.pack_start(self.cell,True)
         self.Com_channel_combo.add_attribute(self.cell,'text',1)
         self.Com_channel_combo.set_active(0)
@@ -534,7 +538,7 @@ class GsComboBox:
         
         
         #create an instance of the gtk CellRendererText object and pack into
-        self.cell = gtk.CellRendererText()
+        self.cell = Gtk.CellRendererText()
         self.combo_obj.pack_start(self.cell,True)
         self.combo_obj.add_attribute(self.cell,'text',1)
         self.combo_obj.set_active(0)
@@ -542,7 +546,7 @@ class GsComboBox:
         
     def _get_options(self,options):
         #create an instance of Liststore with data
-        liststore = gtk.ListStore(int,str)
+        liststore = Gtk.ListStore(int,str)
 #         liststore.append([0,"set_direction"])
 #         liststore.append([1,"up"])
 #         liststore.append([2,"down"])
@@ -577,7 +581,7 @@ class DirectionCombo:
           
         
         #create an instance of the gtk CellRendererText object and pack into
-        self.cell = gtk.CellRendererText()
+        self.cell = Gtk.CellRendererText()
         self.Com_channel_combo.pack_start(self.cell,True)
         self.Com_channel_combo.add_attribute(self.cell,'text',1)
         self.Com_channel_combo.set_active(0)
@@ -585,7 +589,7 @@ class DirectionCombo:
     def get_options(self):
     
         #create an instance of Liststore with data
-        liststore = gtk.ListStore(int,str)
+        liststore = Gtk.ListStore(int,str)
         liststore.append([0,"set_direction"])
         liststore.append([1,"up"])
         liststore.append([2,"down"])
