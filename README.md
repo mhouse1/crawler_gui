@@ -23,3 +23,10 @@ Click Open
 Login as: pi
 Password: raspberry
 
+
+on mac:
+to ping raspberry and see ip addresses
+    ping raspberrypi.local
+
+use command :ssh pi@raspberrypi.local
+password: raspberry
