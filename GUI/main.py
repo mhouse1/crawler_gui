@@ -1,3 +1,10 @@
+'''
+Created on Oct, 1st, 2019
+
+@author: Mike
+
+@details    Crawler GUI Interface
+'''
 import threading
 import time
 
@@ -420,7 +427,6 @@ class CrawlerGUI(GuiSupport):
         self.encoder3.set_text(str(simulate.distance_traveled*4))
         self.encoder4.set_text(str(simulate.distance_traveled*4))
         
-##        #print 'set value to :',simulate.accelerometer_x
         GObject.timeout_add(500,self.simulate_accelerometer)
 
 ##    def launch_worker_thread(self):
@@ -438,31 +444,6 @@ def app_main():
     simulator.start()
     main = CrawlerGUI()
     main.simulate_accelerometer()
- 
-
-
-##def app_main():
-##    win = Gtk.Window(default_height=50, default_width=300)
-##    win.connect("destroy", Gtk.main_quit)
-##
-##    progress = Gtk.ProgressBar(show_text=True)
-##    win.add(progress)
-##
-##    def update_progess(i):
-##        progress.pulse()
-##        progress.set_text(str(i))
-##        return False
-##
-##    def example_target():
-##        for i in range(50):
-##            GLib.idle_add(update_progess, i)
-##            time.sleep(0.2)
-##
-##    win.show_all()
-##
-##    thread = threading.Thread(target=example_target)
-##    thread.daemon = True
-##    thread.start()
 
 
 if __name__ == "__main__":
