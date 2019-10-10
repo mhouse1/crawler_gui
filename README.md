@@ -54,3 +54,8 @@ pip3 is broken
 resolve: use pip to install new pakages for python3 using command example
 python3 -m pip install pyserial
 
+
+can't connect via filazilla
+    Error:        	Disconnected: No supported authentication methods available (server sent: publickey)
+resolve: try connecting using sftp://192.168.0.112 or whatever your local ip is, to see your ip, use command: hostname -I 
+

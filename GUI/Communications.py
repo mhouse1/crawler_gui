@@ -26,6 +26,9 @@ consumer_portname = None
 com_handle = None
 fast_queue = Queue.Queue()
 slow_queue = Queue.Queue()
+
+data_frame = {'incline':3
+}
 stop_sending = False
 
 
@@ -177,21 +180,31 @@ def set_reader():
     '''
     print ('waiting for serial selection')
     global stop_sending
+    global data_frame
     while com_handle is None:
         time.sleep(1)
         #print '=',
     print ('starting reader')
+    line = []
     while True:
-        #time.sleep(0.3)
-        received = com_handle.read()
-        if received == '1':
-            #print 'stop it!'
-            stop_sending = True
-        elif received == '2':
-            #print 'send it'
-            stop_sending = False
-        print('read {}'.format(received))
+        time.sleep(0.3)
+        # received = com_handle.readline()
+        # if received == '1':
+        #     print('stop it!')
+        #     stop_sending = True
+        # elif received == '2':
+        #     #print 'send it'
+        #     stop_sending = False
+        # print('read {}'.format(received))
+        data = com_handle.read(com_handle.inWaiting())
+        msg = data.decode('utf-8')
+        if len(msg) > 0:
 
+            print('read:',msg)
+            degrees = msg.split('=')[1]
+            
+            data_frame['incline'] = degrees
+            print('degree incline:',data_frame['incline'])
                         
 
     

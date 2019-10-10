@@ -82,7 +82,8 @@ def startLongRangeTransceiver():
             if enable_transmission_test:
                 display.text('-Nothing Received-', 15, 10, 1)
             else:
-                display.text('- Waiting for PKT -', 15, 20, 1)
+                pass
+                #display.text('- Waiting for PKT -', 15, 20, 1)
         else:
             # Display the packet text and rssi
             display.fill(0)
@@ -128,15 +129,24 @@ def startLongRangeTransceiver():
             display.text(msg, 0, 20, 1)
         if not transmit_queue.empty():
             message_to_send = transmit_queue.get()
-            print('dequeued:{}'.format(message_to_send))
+            #print('dequeued:{}'.format(message_to_send))
             rfm9x.send(bytes(message_to_send,"utf-8"))
+
         byte_msg = bytes('keep alive',"utf-8")
-        Communications.fast_queue.put(byte_msg)
+        #Communications.fast_queue.put(byte_msg)
+        degrees = Communications.data_frame['incline']
+        #transmit_queue.put(str(degrees))
+        rfm9x.send(bytes(str(degrees),"utf-8"))
+        string_data = 'incline: {}'.format(degrees)
+        msg = "{}".format(string_data)
+        display.text(msg, 0, 20, 1)
+
         display.show()
         time.sleep(0.1)
 
 if __name__ == '__main__':
-    Communications.consumer_portname =  Communications.show_serial_ports()[0]
+    #Communications.consumer_portname =  Communications.show_serial_ports()[0]
+    Communications.consumer_portname =  r'/dev/serial0'
 
     #serial thread for reading
     serial_thread_read = threading.Thread(target = Communications.set_reader)
