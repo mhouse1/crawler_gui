@@ -23,6 +23,8 @@ transmit_queue = queue.Queue()
 #data received
 receive_queue = queue.Queue()
 
+data_frame = {'incline':3
+    }
 def randomString(stringLength=10):
     """Generate a random string of fixed length """
     letters = string.ascii_lowercase
@@ -89,6 +91,8 @@ def startLongRangeTransceiver():
             try:
                 print('received:',str(packet),'\n')
                 packet_text = str(prev_packet, "utf-8")
+                data_frame['incline'] = int(packet_text)
+                print('received incline:',int(data_frame['incline']))
             except Exception as e:
                 packet_text = 'failed to decode'
                 print('error detected:' ,e,)

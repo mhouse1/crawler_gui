@@ -12,6 +12,7 @@ from gi.repository import GLib, Gtk, GObject
 
 import gui_support
 from gui_support import GuiSupport
+import radio_rfm9x
 import simulate
 
 class CrawlerGUI(GuiSupport):    
@@ -414,9 +415,12 @@ class CrawlerGUI(GuiSupport):
         self.axis_x.pulse_width_low = int(self.pulsewidth_x_l.get_text())
 
     def simulate_accelerometer(self):
-        #self.inclineLeftRight.set_value(simulate.accelerometer_x)
+        self.inclineLeftRight.set_value(radio_rfm9x.data_frame['incline'])
+        #import random
+        #self.inclineLeftRight.set_value(random.randint(-5,5))
         #self.inclineFrontBack.set_value(simulate.accelerometer_y)
-        self.movementLeftRight.set_value(simulate.movement_turn)
+        #self.movementLeftRight.set_value(simulate.movement_turn)
+        self.movementLeftRight.set_value(radio_rfm9x.data_frame['incline'])
         #self.movementReverseForward.set_value(simulate.movement_forward)
         self.batteryLevel.set_text(str(simulate.battery_level))
         #self.distanceTraveled.set_text(str(simulate.distance_traveled))
@@ -442,6 +446,13 @@ def app_main():
     simulator.daemon = True #terminate when program ends
     print("starting data simulation")
     simulator.start()
+
+    #used for transceiver communication and data update
+    lora = threading.Thread(target = radio_rfm9x.startLongRangeTransceiver)
+    lora.daemon = True #terminate when program ends
+    print("starting lora")
+    lora.start()
+    
     main = CrawlerGUI()
     main.simulate_accelerometer()
 
