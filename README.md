@@ -30,3 +30,22 @@ to ping raspberry and see ip addresses
 
 use command :ssh pi@raspberrypi.local
 password: raspberry
+
+
+enable copy and paste over VNC
+    sudo apt-get install autocutsel 
+    sudo reboot
+copy paste should work now
+use shit+ctrl+v
+
+installing gtk
+
+    sudo apt-get install glade
+    sudo apt-get install libgtk-3-dev
+
+
+python3 gtk
+from gi.repository import Gtk as gtk
+
+ortError: No module named 'Queue'
+resolve: 
