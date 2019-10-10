@@ -47,5 +47,10 @@ installing gtk
 python3 gtk
 from gi.repository import Gtk as gtk
 
-ortError: No module named 'Queue'
-resolve: 
+importError: No module named 'Queue'
+resolve: in python3 use import queue as Queue
+
+pip3 is broken
+resolve: use pip to install new pakages for python3 using command example
+python3 -m pip install pyserial
+

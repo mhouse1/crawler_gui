@@ -123,7 +123,7 @@ def list_serial_ports():
 ##
 ##        #['/dev/cu.Michael-SerialServer-1', '/dev/cu.MikeHousesiPod-Wireless', '/dev/cu.Bluetooth-Modem', '/dev/cu.Bluetooth-Incoming-Port', '/dev/cu.MikeHousesiPhone-Wirele', '/dev/cu.SLAB_USBtoUART']
 
-def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
+def set_writer(baud_rate = 115200, bytesize = 8, timeout = 1, ):
     '''
         this function will be called once when the GUI first initializes
         it then waits until the user sets an active serial chanel.
@@ -137,7 +137,7 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
     while consumer_portname is None:
         time.sleep(1)
         print ('.',)
-    com_handle = serial.Serial(port = consumer_portname,baudrate = 19200)
+    com_handle = serial.Serial(port = consumer_portname,baudrate = baud_rate)
 
     print ('serial activated')
     
@@ -190,7 +190,7 @@ def set_reader():
         elif received == '2':
             #print 'send it'
             stop_sending = False
-        #print 'read {}'.format(received)
+        print('read {}'.format(received))
 
                         
 
