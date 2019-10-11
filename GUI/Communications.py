@@ -90,13 +90,23 @@ def show_serial_ports():
         raise EnvironmentError('Unsupported platform')
 
     result = []
+    print('checking ports:')
+    limit = 20
+    count = 0
     for port in ports:
+        count += 1
+        #typically we'd find what we're looking for within 20 loops
+        #any more is just probably wasting time
+        if count == limit:
+            return result
         try:
+            print('.', end='')
             s = serial.Serial(port)
             s.close()
             result.append(port)
         except (OSError, serial.SerialException):
             pass
+          
     return result
 
 def list_serial_ports():
