@@ -132,11 +132,15 @@ def startLongRangeTransceiver():
             #print('dequeued:{}'.format(message_to_send))
             rfm9x.send(bytes(message_to_send,"utf-8"))
 
-        byte_msg = bytes('keep alive',"utf-8")
+        #byte_msg = bytes('keep alive',"utf-8")
         #Communications.fast_queue.put(byte_msg)
         degrees = Communications.data_frame['incline']
+        string_data = ','.join([
+                               Communications.data_frame['incline'],
+                               Communications.data_frame['encoder1']
+                               ])
         #transmit_queue.put(str(degrees))
-        rfm9x.send(bytes(str(degrees),"utf-8"))
+        rfm9x.send(bytes(str(string_data),"utf-8"))
         string_data = 'incline: {}'.format(degrees)
         msg = "{}".format(string_data)
         display.text(msg, 0, 20, 1)

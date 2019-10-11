@@ -91,8 +91,11 @@ def startLongRangeTransceiver():
             try:
                 print('received:',str(packet),'\n')
                 packet_text = str(prev_packet, "utf-8")
-                data_frame['incline'] = int(packet_text)
+                packet_text.split(',')
+                data_frame['incline'] = int(packet_text[0])
+                data_frame['encoder1'] = int(packet_text[1])
                 print('received incline:',int(data_frame['incline']))
+                print('received encoder:',int(data_frame['encoder1']))
             except Exception as e:
                 packet_text = 'failed to decode'
                 print('error detected:' ,e,)

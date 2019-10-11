@@ -27,8 +27,8 @@ com_handle = None
 fast_queue = Queue.Queue()
 slow_queue = Queue.Queue()
 
-data_frame = {'incline':3
-}
+data_frame = {'incline':3, 'encoder1':3
+              }
 stop_sending = False
 
 
@@ -211,13 +211,40 @@ def set_reader():
         if len(msg) > 0:
 
             print('read:',msg)
-            degrees = msg.split('=')[1]
-            
-            data_frame['incline'] = degrees
-            print('degree incline:',data_frame['incline'])
+            #convert "read: Awake:c=0, r=0" into "parsed: ['c', '0, r', '0']"
+            try:
+                msg.strip('\r\n')
+                data = [x.split('=')[1].strip('\r\n') for x in msg.split(':')[1].split(',')]
+                print('parsed:',data)
+
+                data_frame['encoder1'] = data[0]
+                data_frame['incline'] = data[1]
+                print('degree incline:',data_frame['incline'])
+                print('encoder :',data_frame['encoder1'])
+            except Exception:
+                print('failed to parse')
+                print(str(Exception))
                         
 
     
 if __name__ == "__main__":
-    print (show_serial_ports())
+    #print (show_serial_ports())
     #transmit('hello world')
+    consumer_portname =  r'/dev/serial0'
+
+    #serial thread for reading
+    serial_thread_read = threading.Thread(target = set_reader)
+    serial_thread_read.daemon = True #terminate when program ends
+    print("starting reader")
+    serial_thread_read.start()
+
+    #serial thread for writing
+    serial_thread_write = threading.Thread(target = set_writer)
+    serial_thread_write.daemon = True #terminate when program ends
+    print("starting data writer")
+    serial_thread_write.start()
+
+
+    while True:
+        time.sleep(1)
+    
