@@ -8,13 +8,32 @@ Created on Oct, 1st, 2019
 import threading
 import time
 
-from gi.repository import GLib, Gtk, GObject
+import gtk as Gtk
+import gobject as GObject
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
 
 import gui_support
 from gui_support import GuiSupport
-import radio_rfm9x
+#import serial_radio_rfm9x
 import simulate
 
+#Use below for linux
+##
+##import threading
+##import time
+##
+##import gtk
+##from gi.repository import GLib, Gtk, GObject
+##
+##import gui_support
+##from gui_support import GuiSupport
+##import radio_rfm9x
+##import simulate
+##
 class CrawlerGUI(GuiSupport):    
     def __init__(self):
         '''
@@ -447,12 +466,12 @@ def app_main():
     print("starting data simulation")
     simulator.start()
 
-    #used for transceiver communication and data update
-    lora = threading.Thread(target = radio_rfm9x.startLongRangeTransceiver)
-    lora.daemon = True #terminate when program ends
-    print("starting lora")
-    lora.start()
-    
+##    #used for transceiver communication and data update
+##    lora = threading.Thread(target = radio_rfm9x.startLongRangeTransceiver)
+##    lora.daemon = True #terminate when program ends
+##    print("starting lora")
+##    lora.start()
+##    
     main = CrawlerGUI()
     main.simulate_accelerometer()
 

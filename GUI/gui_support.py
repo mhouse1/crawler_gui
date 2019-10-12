@@ -8,13 +8,17 @@ Created on Aug 24, 2014
           All the communication is sent via a parallel process that is launched when the user
           configures the communication port.
 '''
-#import gtk
-from gi.repository import GLib, Gtk, GObject
+#on windows
+import gtk as Gtk
+import gobject as GObject
+import ConfigParser #python 2
 
+#use for linux
+#from gi.repository import GLib, Gtk, GObject
+#import configparser as ConfigParser #python 3 support
+
+#other imports
 import os
-import configparser as ConfigParser #python 3 support
-#import ConfigParser #python 2 support
-
 import sys
 
 import protocolwrapper

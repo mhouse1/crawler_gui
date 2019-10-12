@@ -100,7 +100,7 @@ def show_serial_ports():
         if count == limit:
             return result
         try:
-            print('.', end='')
+            #print('.', end='')
             s = serial.Serial(port)
             s.close()
             result.append(port)
