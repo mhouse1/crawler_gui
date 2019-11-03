@@ -43,7 +43,7 @@
   </object>
   <object class="GtkWindow" id="window1">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">Crawler_UI_Prototype</property>
+    <property name="title" translatable="yes">Crawler UI</property>
     <signal name="destroy" handler="on_window1_destroy" swapped="no"/>
     <child>
       <object class="GtkVBox" id="vbox1">
@@ -214,6 +214,18 @@
                                         <property name="top_attach">4</property>
                                         <property name="bottom_attach">5</property>
                                       </packing>
+                                    </child>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                    <child>
+                                      <placeholder/>
                                     </child>
                                     <child>
                                       <placeholder/>
@@ -1994,6 +2006,27 @@
                                 <property name="column_spacing">5</property>
                                 <property name="row_spacing">5</property>
                                 <child>
+                                  <object class="GtkComboBox" id="Com_channel_combo_box">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Select a valid serial com port</property>
+                                    <signal name="changed" handler="on_Com_channel_combo_box_changed" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="rescan_coms">
+                                    <property name="label" translatable="yes">Rescan com port</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <signal name="clicked" handler="on_rescan_coms_clicked" swapped="no"/>
+                                  </object>
+                                </child>
+                                <child>
                                   <object class="GtkEntry" id="GCode_File_Location">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
@@ -2012,18 +2045,6 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkComboBox" id="Com_channel_combo_box">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Select a valid serial com port</property>
-                                    <signal name="changed" handler="on_Com_channel_combo_box_changed" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
                                   <object class="GtkButton" id="Browse_For_GCode">
                                     <property name="label" translatable="yes">Browse...</property>
                                     <property name="visible">True</property>
@@ -2035,15 +2056,6 @@
                                     <property name="top_attach">1</property>
                                     <property name="bottom_attach">2</property>
                                   </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="rescan_coms">
-                                    <property name="label" translatable="yes">Rescan com port</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <signal name="clicked" handler="on_rescan_coms_clicked" swapped="no"/>
-                                  </object>
                                 </child>
                               </object>
                             </child>
@@ -2070,10 +2082,31 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <placeholder/>
+                          <object class="GtkButton" id="button1">
+                            <property name="label" translatable="yes">connect</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">0</property>
+                          </packing>
                         </child>
                         <child>
-                          <placeholder/>
+                          <object class="GtkButton" id="button6">
+                            <property name="label" translatable="yes">disconnect</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <signal name="clicked" handler="on_button6_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">1</property>
+                          </packing>
                         </child>
                         <child>
                           <placeholder/>

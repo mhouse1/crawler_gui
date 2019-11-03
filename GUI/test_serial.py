@@ -221,21 +221,15 @@ def set_reader():
 
     
 if __name__ == "__main__":
-    #print show_serial_ports()
 
-    print 'available ports',list_serial_ports()
-    #transmit('hello world')
-    #start communication for reading and writing
 
-    consumer_portname ='COM8'
+    com_handle = serial.Serial(port = 'COM8',baudrate = 115200)
+    com_handle.write('pi/r')
+    com_handle.write('raspberry/r')
+    com_handle.write('cd /home')
+    com_handle.write('ls')
 
-    comthreadWriter = threading.Thread(target = set_writer)
-    comthreadWriter.daemon = True #terminate thread when program ends
-    comthreadWriter.start()
-
-    comthreadReader = threading.Thread(target = set_reader)
-    comthreadReader.daemon = True #terminate when program ends
-    comthreadReader.start()
-
-    input('paused')
-    print ('end of testing')
+    while True:
+        time.sleep(0.3)
+        print 'read',com_handle.readlines()
+        input('pause')

@@ -337,6 +337,11 @@ class CrawlerGUI(GuiSupport):
         to display serial ports available
         '''
         self.ComComboHandle.rescan()
+
+    def on_button6_clicked(self,widget):
+        Communications.com_handle.close()
+        Communications.consumer_portname = None
+        Communications.serial_activated = False
         
     def on_Com_channel_combo_box_changed(self,widget, data = None):
         '''
@@ -348,6 +353,7 @@ class CrawlerGUI(GuiSupport):
 
         #set selection state 0 as a false state
         if not self.index == 0:
+            print('selected', self.item)
             Communications.consumer_portname = self.item
             Communications.serial_activated = True
         #self.builder.get_object("label1").set_text(self.item)
@@ -426,21 +432,23 @@ class CrawlerGUI(GuiSupport):
 
     def simulate_accelerometer(self):
         print 'simulating accelerometer'
-        self.inclineLeftRight.set_value(simulate.accelerometer_x)
-        self.inclineFrontBack.set_value(simulate.accelerometer_y)
-        self.movementLeftRight.set_value(simulate.movement_turn)
-        self.movementReverseForward.set_value(simulate.movement_forward)
-        self.batteryLevel.set_text(str(simulate.battery_level))
-        self.distanceTraveled.set_text(str(simulate.distance_traveled))
+        return 0
+
+        # self.inclineLeftRight.set_value(simulate.accelerometer_x)
+        # self.inclineFrontBack.set_value(simulate.accelerometer_y)
+        # self.movementLeftRight.set_value(simulate.movement_turn)
+        # self.movementReverseForward.set_value(simulate.movement_forward)
+        # self.batteryLevel.set_text(str(simulate.battery_level))
+        # self.distanceTraveled.set_text(str(simulate.distance_traveled))
         
-        #where 4 is the number of magnets embedded inside on the tire hub
-        self.encoder1.set_text(str(simulate.distance_traveled*4))
-        self.encoder2.set_text(str(simulate.distance_traveled*4))
-        self.encoder3.set_text(str(simulate.distance_traveled*4))
-        self.encoder4.set_text(str(simulate.distance_traveled*4))
+        # #where 4 is the number of magnets embedded inside on the tire hub
+        # self.encoder1.set_text(str(simulate.distance_traveled*4))
+        # self.encoder2.set_text(str(simulate.distance_traveled*4))
+        # self.encoder3.set_text(str(simulate.distance_traveled*4))
+        # self.encoder4.set_text(str(simulate.distance_traveled*4))
         
-        #print 'set value to :',simulate.accelerometer_x
-        gobject.timeout_add(500,self.simulate_accelerometer)
+        # #print 'set value to :',simulate.accelerometer_x
+        # gobject.timeout_add(500,self.simulate_accelerometer)
 
 ##    def launch_worker_thread(self):
 ##        self.worker_thread = threading.Thread(target=do_work, args=(self.com_queue,))
