@@ -224,12 +224,24 @@ if __name__ == "__main__":
 
 
     com_handle = serial.Serial(port = 'COM8',baudrate = 115200)
-    com_handle.write('pi/r')
-    com_handle.write('raspberry/r')
-    com_handle.write('cd /home')
-    com_handle.write('ls')
+    # com_handle.write('pi\r')
+    # com_handle.write('raspberry/r')
+    # com_handle.write('cd /home')
+    my_input = raw_input('pause')
+    com_handle.write(my_input+'\r')
+    my_input = raw_input('pause')
+    com_handle.write(my_input+'\r')
+    my_input = raw_input('pause')
+    com_handle.write(my_input+'\r')
+    #com_handle.write('ls\r')
+    com_handle.write('cd /home/crawler_gui\r')
+    com_handle.write('python main.py\r')
 
     while True:
         time.sleep(0.3)
-        print 'read',com_handle.readlines()
-        input('pause')
+        my_input = raw_input('pause')
+        print('sending:',my_input+'\r')
+        com_handle.write(my_input)
+        data = com_handle.read(com_handle.inWaiting())
+        print 'read:',data
+
