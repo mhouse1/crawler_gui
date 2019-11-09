@@ -27,7 +27,8 @@ com_handle = None
 fast_queue = Queue.Queue()
 slow_queue = Queue.Queue()
 
-data_frame = {'incline':3, 'encoder1':3
+data_frame = {#'incline':3, 'encoder1':3,
+              'raw_data_from_fpga':'empty'
               }
 stop_sending = False
 
@@ -213,14 +214,15 @@ def set_reader():
             print('read:',msg)
             #convert "read: Awake:c=0, r=0" into "parsed: ['c', '0, r', '0']"
             try:
-                msg.strip('\r\n')
-                data = [x.split('=')[1].strip('\r\n') for x in msg.split(':')[1].split(',')]
-                print('parsed:',data)
+                data_frame['raw_data_from_fpga'] = msg
+                # msg.strip('\r\n')
+                # data = [x.split('=')[1].strip('\r\n') for x in msg.split(':')[1].split(',')]
+                # print('parsed:',data)
 
-                data_frame['encoder1'] = data[0]
-                data_frame['incline'] = data[1]
-                print('degree incline:',data_frame['incline'])
-                print('encoder :',data_frame['encoder1'])
+                # data_frame['encoder1'] = data[0]
+                # data_frame['incline'] = data[1]
+                # print('degree incline:',data_frame['incline'])
+                # print('encoder :',data_frame['encoder1'])
             except Exception:
                 print('failed to parse')
                 print(str(Exception))
