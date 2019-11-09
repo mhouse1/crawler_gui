@@ -165,18 +165,30 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
             com_handle.write('ls\r')
             print('connected to ',consumer_portname)
             sys.stdout.flush()
+
+            #enable code below to manually enter commands
+            # data = raw_input('enter a command:')
+            # if data == 'exit':
+            #     data = '\x03'
+            # else:
+            #     data = str(data) + '\r'
+            # print data
+            # com_handle.write(data)
+            # time.sleep(2)
+
             serial_activated = True
-        elif serial_activated:
+            start_user_side_radio = True
+
+
+        elif start_user_side_radio:
+            com_handle.write('ls\r')
+            com_handle.write('cd /home/crawler_gui/GUI\r')
+            com_handle.write('python3 radio_rfm9x.py\r')
+            start_user_side_radio = False
             #com_handle.write('ls\r')
-            data = 'ls'
-            #data = raw_input('enter a command:')
-            if data == 'exit':
-                data = '\x03'
-            else:
-                data = str(data) + '\r'
-            print data
-            com_handle.write(data)
-            time.sleep(2)
+            #data = 'ls'
+
+
         while not fast_queue.empty() and not stop_sending and consumer_portname:
             message_to_send = fast_queue.get()
             #print "OutF: {}".format(message_to_send)
@@ -256,6 +268,11 @@ def set_reader():
         if len(msg) > 0:
 
             print'read:',msg
+            if 'Login incorrect' in msg:
+                com_handle.write('pi\r')
+                time.sleep(0.5)
+                com_handle.write('raspberry\r')
+
             #convert "read: Awake:c=0, r=0" into "parsed: ['c', '0, r', '0']"
             # try:
             #     msg.strip('\r\n')
@@ -277,7 +294,7 @@ if __name__ == "__main__":
     #transmit('hello world')
     #start communication for reading and writing
 
-    consumer_portname ='COM8'
+    consumer_portname ='COM9'
 
     comthreadWriter = threading.Thread(target = set_writer)
     comthreadWriter.daemon = True #terminate thread when program ends
