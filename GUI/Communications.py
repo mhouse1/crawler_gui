@@ -251,6 +251,17 @@ def set_reader():
     '''sets the active serial channel
     
         this function will be called once when the GUI first initializes
+
+
+        once radio_rfm9x.py is launched the expected output will be of syntax
+
+            received: Awake:c=(0,0,0,44), r=0
+
+            received: Awake:c=(0,0,0,44), r=0
+
+            received: Awake:c=(0,0,0,44), r=0
+
+            received: Awake:c=(0,0,0,44), r=0
     '''
     print ('reader waiting for serial selection')
     global stop_sending

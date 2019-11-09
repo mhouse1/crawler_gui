@@ -92,21 +92,22 @@ def startLongRangeTransceiver():
         else:
             # Display the packet text and rssi
             display.fill(0)
-            prev_packet = packet
+            packet_text = str(packet, "utf-8")
             try:
-                print('received:',str(packet),'\n')
-                packet_text = str(prev_packet, "utf-8")
-                packet_text.split(',')
-                data_frame['incline'] = int(packet_text[0])
-                data_frame['encoder1'] = int(packet_text[1])
-                print('received incline:',int(data_frame['incline']))
-                print('received encoder:',int(data_frame['encoder1']))
+                print('received:',packet_text)
+                # packet_text = str(prev_packet, "utf-8")
+                # packet_text.split(',')
+                # data_frame['incline'] = int(packet_text[0])
+                # data_frame['encoder1'] = int(packet_text[1])
+                # print('received incline:',int(data_frame['incline']))
+                # print('received encoder:',int(data_frame['encoder1']))
             except Exception as e:
-                packet_text = 'failed to decode'
+                #packet_text = 'failed to decode'
                 print('error detected:' ,e,)
-                
-            display.text('RX: ', 0, 0, 1)
-            display.text(packet_text, 25, 0, 1)
+            currentime = datetime.datetime.utcnow().strftime('%m-%d %H:%M:%S.%f')[:-3]
+            display.text(currentime, 0, 0, 1)
+            display.text(packet_text[:20], 25, 10, 1)
+            display.text(packet_text[20:], 25, 20, 1)
             time.sleep(1)
 
         if not btnA.value:
@@ -145,7 +146,6 @@ def startLongRangeTransceiver():
         
         display.show()
         time.sleep(0.2)
-        print('alive')
 
 def get_input():
     global rfm9x
