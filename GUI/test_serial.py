@@ -23,8 +23,6 @@ fast_queue = Queue.Queue()
 slow_queue = Queue.Queue()
 stop_sending = False
 
-data_frame = {'incline':3, 'encoder1':3
-              }
 
 def transmit(message, transmit_speed = 0):
     #where messages is a list of framed data
@@ -132,7 +130,6 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
     '''
     global com_handle
     global stop_sending
-    global serial_activated
     
     # print 'waiting for serial selection'
     # while consumer_portname is None:
@@ -149,45 +146,19 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
     while True:
         print '+',
         sys.stdout.flush()
-        if not serial_activated:
-            print 'writer waiting for serial selection'
-
-            #wait until consumer_portname is defined
+        if consumer_portname is None:
+            print 'waiting for serial selection'
             while consumer_portname is None:
                 time.sleep(1)
                 print '.',
                 sys.stdout.flush()
                 
             com_handle = serial.Serial(port = consumer_portname,baudrate = 115200)
-            # com_handle.write('pi\r')
-            # com_handle.write('raspberry/r/n')
-            # com_handle.write('cd /home')
-            com_handle.write('ls\r')
+            com_handle.write('pi/r/n')
+            com_handle.write('raspberry/r/n')
+            com_handle.write('cd /home')
+            com_handle.write('ls')
             print('connected to ',consumer_portname)
-            sys.stdout.flush()
-
-            #enable code below to manually enter commands
-            # data = raw_input('enter a command:')
-            # if data == 'exit':
-            #     data = '\x03'
-            # else:
-            #     data = str(data) + '\r'
-            # print data
-            # com_handle.write(data)
-            # time.sleep(2)
-
-            serial_activated = True
-            start_user_side_radio = True
-
-
-        elif start_user_side_radio:
-            com_handle.write('ls\r')
-            com_handle.write('cd /home/crawler_gui/GUI\r')
-            com_handle.write('python3 radio_rfm9x.py\r')
-            start_user_side_radio = False
-            #com_handle.write('ls\r')
-            #data = 'ls'
-
 
         while not fast_queue.empty() and not stop_sending and consumer_portname:
             message_to_send = fast_queue.get()
@@ -212,100 +183,65 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
         #stop_sending = False
         
 
-# def set_reader():
-#     '''sets the active serial channel
-    
-#         this function will be called once when the GUI first initializes
-#     '''
-#     print 'waiting for serial selection'
-#     global stop_sending
-
-#     while True:
-#         time.sleep(0.3)
-#         print('*')
-#         sys.stdout.flush()
-#         if com_handle is None:
-#             print('reader waiting for coms')
-#             sys.stdout.flush()
-#             while com_handle is None:
-#                 time.sleep(1)
-#                 #print '=',
-#             print 'starting reader'
-#         #time.sleep(0.3)
-#         else:
-#             #return 0
-#             received = com_handle.read()
-#             print received
-#             print('&')
-#             sys.stdout.flush()
-#             if received == '1':
-#                 #print 'stop it!'
-#                 stop_sending = True
-#             elif received == '2':
-#                 #print 'send it'
-#                 stop_sending = False
-#             #print 'read {}'.format(received)
-
-                        
 def set_reader():
     '''sets the active serial channel
     
         this function will be called once when the GUI first initializes
     '''
-    print ('reader waiting for serial selection')
+    print 'waiting for serial selection'
     global stop_sending
-    global data_frame
-    while com_handle is None:
-        time.sleep(1)
-        print '=',
-    print ('starting reader')
-    line = []
+
     while True:
         time.sleep(0.3)
+        print('*')
+        sys.stdout.flush()
+        if com_handle is None:
+            print('reader waiting for coms')
+            sys.stdout.flush()
+            while com_handle is None:
+                time.sleep(1)
+                #print '=',
+            print 'starting reader'
+        #time.sleep(0.3)
+        else:
+            #return 0
+            received = com_handle.read()
+            print received
+            print('&')
+            sys.stdout.flush()
+            if received == '1':
+                #print 'stop it!'
+                stop_sending = True
+            elif received == '2':
+                #print 'send it'
+                stop_sending = False
+            #print 'read {}'.format(received)
 
-        data = com_handle.read(com_handle.inWaiting())
-        msg = data.decode('utf-8')
-        if len(msg) > 0:
+                        
 
-            print'read:',msg
-            if 'Login incorrect' in msg:
-                com_handle.write('pi\r')
-                time.sleep(0.5)
-                com_handle.write('raspberry\r')
-
-            #convert "read: Awake:c=0, r=0" into "parsed: ['c', '0, r', '0']"
-            # try:
-            #     msg.strip('\r\n')
-            #     data = [x.split('=')[1].strip('\r\n') for x in msg.split(':')[1].split(',')]
-            #     print('parsed:',data)
-
-            #     data_frame['encoder1'] = data[0]
-            #     data_frame['incline'] = data[1]
-            #     print('degree incline:',data_frame['incline'])
-            #     print('encoder :',data_frame['encoder1'])
-            # except Exception:
-            #     print('failed to parse')
-            #     print(str(Exception))
     
 if __name__ == "__main__":
-    #print show_serial_ports()
 
-    print 'available ports',list_serial_ports()
-    #transmit('hello world')
-    #start communication for reading and writing
 
-    consumer_portname ='COM9'
-
-    comthreadWriter = threading.Thread(target = set_writer)
-    comthreadWriter.daemon = True #terminate thread when program ends
-    comthreadWriter.start()
-
-    comthreadReader = threading.Thread(target = set_reader)
-    comthreadReader.daemon = True #terminate when program ends
-    comthreadReader.start()
+    com_handle = serial.Serial(port = 'COM8',baudrate = 115200)
+    # com_handle.write('pi\r')
+    # com_handle.write('raspberry/r')
+    # com_handle.write('cd /home')
+    my_input = raw_input('pause')
+    com_handle.write(my_input+'\r')
+    my_input = raw_input('pause')
+    com_handle.write(my_input+'\r')
+    my_input = raw_input('pause')
+    com_handle.write(my_input+'\r')
+    #com_handle.write('ls\r')
+    com_handle.write('cd /home/crawler_gui\r')
+    com_handle.write('python main.py\r')
 
     while True:
-        time.sleep(3)
-        print '#',
-    input('paused')
-    print ('end of testing')
+        time.sleep(0.3)
+        my_input = raw_input('pause')
+        print('sending:',my_input+'\r')
+        com_handle.write(my_input)
+        data = com_handle.read(com_handle.inWaiting())
+        print 'read:',data
+
