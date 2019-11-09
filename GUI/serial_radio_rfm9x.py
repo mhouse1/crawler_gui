@@ -66,6 +66,7 @@ def startLongRangeTransceiver():
     prev_packet = None
 
     enable_transmission_test = False
+    enable_transmitting_crawler_data = True
     
     print('starting Terrafirma Technology LoRa')
     while True:
@@ -95,19 +96,21 @@ def startLongRangeTransceiver():
                 packet_text = 'failed to decode'
                 print('error detected:' ,e,)
                 
-            display.text('RX: ', 0, 0, 1)
+            display.text('RX cmd: ', 0, 0, 1)
             display.text(packet_text, 25, 0, 1)
-            time.sleep(1)
+            Communications.transmit(packet_text)
 
         if not btnA.value:
-            enable_transmission_test = True
+            #toggle transmission
+            enable_transmitting_crawler_data = False if enable_transmitting_crawler_data else True
             # Send Button A
             display.fill(0)
             #button_a_data = bytes(msg,"utf-8")
-            display.text('Started', 0, 10, 1)
-            display.text('Tranceiver Test', 0, 20, 1)
+            display.text('toggled', 0, 10, 1)
+            display.text('', 0, 20, 1)
         elif not btnB.value:
             # Send Button B
+            enable_transmission_test = True
             display.fill(0)
             #send random string value
             string_data = randomString(10)
@@ -132,12 +135,15 @@ def startLongRangeTransceiver():
             #print('dequeued:{}'.format(message_to_send))
             rfm9x.send(bytes(message_to_send,"utf-8"))
 
-        from_fpga =  Communications.data_frame['raw_data_from_fpga']
-        rfm9x.send(bytes(str(from_fpga),"utf-8"))
-        msg = "{}".format(from_fpga)
-        #where text(string,x,y,column)
-        display.text(msg[:15], 0, 10, 1)
-        display.text(msg[15:], 0, 20,1)
+        if enable_transmitting_crawler_data:
+            from_fpga =  Communications.data_frame['raw_data_from_fpga']
+            Communications.data_frame['raw_data_from_fpga'] = 'no new data'
+            rfm9x.send(bytes(str(from_fpga),"utf-8"))
+            msg = "{}".format(from_fpga)
+            #where text(string,x,y,column)
+            display.text(msg[:15], 0, 10, 1)
+            display.text(msg[15:], 0, 20,1)
+
         display.show()
 
         time.sleep(0.1)
