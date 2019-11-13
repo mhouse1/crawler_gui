@@ -11,9 +11,8 @@ Created on Aug 13, 2014
 '''
 import gtk
 import time
-#import glib #used to continously update GUI objects
 
-import Communications
+import Communications, data_parser
 import simulate
 import gui_support
 from gui_support import GuiSupport
@@ -132,8 +131,8 @@ class CrawlerGUI(GuiSupport):
         self.window.show()
         self.comthread = None
 
-        gobject.timeout_add(1000,self.simulate_accelerometer)
-
+        #gobject.timeout_add(1000,self.data_update)
+        self.data_update()
 
     ###################### Actions for all signals#########################
     def on_togglebutton9_toggled(self,widget):
@@ -430,9 +429,15 @@ class CrawlerGUI(GuiSupport):
         self.axis_x.pulse_width_high = int(self.pulsewidth_x_h.get_text())
         self.axis_x.pulse_width_low = int(self.pulsewidth_x_l.get_text())
 
-    def simulate_accelerometer(self):
-        print 'simulating accelerometer'
-        return 0
+    def data_update(self):
+        print 'called data update'
+        if data_parser.data_frame:
+            self.encoder1.set_text(str(data_parser.data_frame['encoder1']))
+            self.encoder2.set_text(str(data_parser.data_frame['encoder2']))
+            self.encoder3.set_text(str(data_parser.data_frame['encoder3']))
+            self.encoder4.set_text(str(data_parser.data_frame['encoder4']))
+            self.inclineLeftRight.set_value(data_parser.data_frame['roll'])
+        #return 0
 
         # self.inclineLeftRight.set_value(simulate.accelerometer_x)
         # self.inclineFrontBack.set_value(simulate.accelerometer_y)
@@ -448,13 +453,7 @@ class CrawlerGUI(GuiSupport):
         # self.encoder4.set_text(str(simulate.distance_traveled*4))
         
         # #print 'set value to :',simulate.accelerometer_x
-        # gobject.timeout_add(500,self.simulate_accelerometer)
-
-##    def launch_worker_thread(self):
-##        self.worker_thread = threading.Thread(target=do_work, args=(self.com_queue,))
-##        self.worker_thread.start()
-##        Glib.timeout_add(1000, self.check_queue) # run check_queue every 1 second
-##
+        gobject.timeout_add(1000,self.data_update)
 
 if __name__ == "__main__":
     print 'starting crawler GUI'
@@ -466,10 +465,10 @@ if __name__ == "__main__":
     comthreadReader.daemon = True #terminate when program ends
     comthreadReader.start()
 
-    #used for Demonstrating GUI operation
-    simulator = threading.Thread(target = simulate.simulate_data)
-    simulator.daemon = True #terminate when program ends
-    simulator.start()
+    # #used for Demonstrating GUI operation
+    # simulator = threading.Thread(target = simulate.simulate_data)
+    # simulator.daemon = True #terminate when program ends
+    # simulator.start()
 
     
     #GUI thread    

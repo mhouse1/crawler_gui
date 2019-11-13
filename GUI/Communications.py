@@ -155,7 +155,7 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
             #wait until consumer_portname is defined
             while consumer_portname is None:
                 time.sleep(1)
-                print '.',
+                #print '.',
                 sys.stdout.flush()
                 
             com_handle = serial.Serial(port = consumer_portname,baudrate = 115200)
@@ -263,12 +263,16 @@ def set_reader():
 
             received: Awake:c=(0,0,0,44), r=0
     '''
+    import data_parser
+    
     print ('reader waiting for serial selection')
     global stop_sending
     global data_frame
+    global robot_data
+
     while com_handle is None:
         time.sleep(1)
-        print '=',
+        #print '=',
     print ('starting reader')
     line = []
     while True:
@@ -278,7 +282,8 @@ def set_reader():
         msg = data.decode('utf-8')
         if len(msg) > 0:
 
-            print'read:',msg
+            print'rd:',msg
+            data_parser.interpret_data(msg)
             if 'Login incorrect' in msg:
                 com_handle.write('pi\r')
                 time.sleep(0.5)
@@ -317,6 +322,7 @@ if __name__ == "__main__":
 
     while True:
         time.sleep(3)
-        print '#',
-    input('paused')
+        #print '#',
+    
     print ('end of testing')
+    input('press enter to exit')
