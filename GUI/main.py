@@ -6,7 +6,7 @@ Created on Nov. 13, 2019
 @details    crawler GUI
 '''
 import gtk
-import time
+import time, os
 
 import Communications, data_parser
 import simulate
@@ -19,6 +19,7 @@ import gobject
 #Allow only the main thread to touch the GUI (gtk) part, while letting other threads do background work.
 gobject.threads_init()
 
+script_location = os.path.dirname(os.path.abspath(__file__))
 class CrawlerGUI(GuiSupport):    
     def __init__(self):
         '''
@@ -142,9 +143,9 @@ class CrawlerGUI(GuiSupport):
         print 'eventbox pressed'
         self.emergencyToggle = not self.emergencyToggle
         if self.emergencyToggle:
-            self.emergencyStopImage.set_from_file(r'C:\Users\Mech1\Documents\crawler_gui\GUI\emergency2.jpg')
+            self.emergencyStopImage.set_from_file(os.path.join(script_location,'emergency2.jpg'))
         else:
-            self.emergencyStopImage.set_from_file(r'C:\Users\Mech1\Documents\crawler_gui\GUI\emergency1.png')
+            self.emergencyStopImage.set_from_file(os.path.join(script_location,'emergency1.png'))
 
 
     def on_image7_button_press_event(self,widget):
