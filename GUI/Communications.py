@@ -1,5 +1,5 @@
 '''
-Created on Aug 9, 2014
+Created on Nov 15, 2019
 
 @author: Mike
 
@@ -15,6 +15,8 @@ import time
 import multiprocessing
 import threading
 import Queue
+import struct
+
 #active_serial = None
 serial_activated = False
 consumer_portname = None
@@ -25,6 +27,11 @@ stop_sending = False
 
 data_frame = {'incline':3, 'encoder1':3
               }
+
+def SendCommand(addr,val):
+    print('send command',addr,val)
+    vv=struct.pack('Hh',addr,val)
+    transmit(vv)
 
 def transmit(message, transmit_speed = 0):
     #where messages is a list of framed data
@@ -45,18 +52,17 @@ def transmit(message, transmit_speed = 0):
     #    //printf("%d ", a);
     #    listener.input(a);
     #}
-    default_file_name = 'bytestream'
-    default_file_ext = '.txt'
-    default_file_index = 0
-    file_name = default_file_name+str(default_file_index)+default_file_ext
-#     while os.path.isfile(file_name):
-#         default_file_index += 1
-#         file_name = default_file_name+str(default_file_index)+default_file_ext
-    with open(file_name, "a") as myfile:
-        for char in message:
-            myfile.write(str(ord(char))+' ')
-            #myfile.write(char)
-        #myfile.write(message[:-1])
+
+    #enable code below to capture transmitted data
+    # default_file_name = 'bytestream'
+    # default_file_ext = '.txt'
+    # default_file_index = 0
+    # file_name = default_file_name+str(default_file_index)+default_file_ext
+    # with open(file_name, "a") as myfile:
+    #     for char in message:
+    #         myfile.write(str(ord(char))+' ')
+    #         #myfile.write(char)
+    #     #myfile.write(message[:-1])
     
     if transmit_speed == 0:
         #print 'putFast',message
@@ -191,7 +197,7 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
 
         while not fast_queue.empty() and not stop_sending and consumer_portname:
             message_to_send = fast_queue.get()
-            #print "OutF: {}".format(message_to_send)
+            print "TX: {}".format(message_to_send)
             com_handle.write(message_to_send)
         time.sleep(0.5) 
         #print 'stopsend = {}'.format(stop_sending)
@@ -264,7 +270,7 @@ def set_reader():
             received: Awake:c=(0,0,0,44), r=0
     '''
     import data_parser
-    
+
     print ('reader waiting for serial selection')
     global stop_sending
     global data_frame

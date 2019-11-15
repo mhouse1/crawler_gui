@@ -7,6 +7,7 @@ Created on Nov. 13, 2019
 '''
 import gtk
 import time, os
+from collections import OrderedDict 
 
 import Communications, data_parser
 import simulate
@@ -118,13 +119,61 @@ class CrawlerGUI(GuiSupport):
         #gobject.timeout_add(1000,self.data_update)
         self.data_update()
 
+        self.status_of_relays = OrderedDict([
+            ('togglebutton1', False),
+            ('togglebutton2', False),
+            ('togglebutton3', False),
+            ('togglebutton4', False),
+            ('togglebutton5', False),
+            ('togglebutton6', False),
+            ('togglebutton7', False),
+            ('togglebutton8', False),
+        ])
     ###################### Actions for all signals#########################
-    def on_speedScale_value_changed(self,a):
+    def on_speedScale_value_changed(self,widget):
         '''
         set percentage of speed
         '''
-        print 'speed event'
+        Communications.SendCommand(2,int(widget.get_value()))
+    def on_speedScale1_value_changed(self,widget):
+        '''
+        set percentage of speed
+        '''
+        Communications.SendCommand(3,int(widget.get_value()))
 
+    def on_speedScale2_value_changed(self,widget):
+        '''
+        set percentage of speed
+        '''
+        Communications.SendCommand(9,int(widget.get_value()))
+
+    def on_entry2_editing_done(self,widget):
+        Communications.SendCommand(3,int(widget.get_text()))
+
+    def on_checkbutton4_toggled(self,widget):
+        Communications.SendCommand(1,widget.get_active())
+
+    def on_checkbutton5_toggled(self,widget):
+        Communications.SendCommand(1,widget.get_active())
+
+    def toggled_a_relay(self,widget):
+        #print 'clicked', widget.get_label(), gtk.Buildable.get_name(widget), widget.get_active()
+        self.status_of_relays[gtk.Buildable.get_name(widget)] = widget.get_active()
+        #print self.status_of_relays
+        val = 0
+        for index, key in enumerate(self.status_of_relays):
+            #print key, self.status_of_relays[key]
+            val = val+((index+1)*self.status_of_relays[key])
+        Communications.SendCommand(5,val)
+
+    def on_button11_clicked(self,widget):
+        Communications.SendCommand(4,0)
+
+    def on_button12_clicked(self,widget):
+        Communications.SendCommand(4,4095)
+
+    def on_button13_clicked(self,widget):
+        Communications.SendCommand(4,2056)
 
     def on_togglebutton9_clicked(self,widget):
         '''
