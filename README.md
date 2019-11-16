@@ -31,7 +31,8 @@ to ping raspberry and see ip addresses
 use command :ssh pi@raspberrypi.local
 password: raspberry
 
-
+Using FileZilla to connect to raspberry
+Host: stfp://raspberrypi.local Username:pi Password:raspberry
 
 give your pi a unique hostname
 details:https://thepihut.com/blogs/raspberry-pi-tutorials/19668676-renaming-your-raspberry-pi-the-hostname
