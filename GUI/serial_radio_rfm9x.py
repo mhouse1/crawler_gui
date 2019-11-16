@@ -7,7 +7,7 @@
                 includes serial thread
 """
 # Import Python System Libraries
-import time, datetime, random, string, Communications, threading
+import time, datetime, random, string, Communications_crawler_side, threading
 import queue
 
 # Import Blinka Libraries
@@ -73,7 +73,7 @@ def startLongRangeTransceiver():
         packet = None
         # draw a box to clear the image
         display.fill(0)
-        display.text('Terrafirma Technology', 0, 0, 1)
+        display.text('v0.2', 0, 0, 1)
 
         # check for packet rx
         packet = rfm9x.receive()
@@ -93,12 +93,13 @@ def startLongRangeTransceiver():
                 print('received:',str(packet),'\n')
                 packet_text = str(prev_packet, "utf-8")
             except Exception as e:
-                packet_text = 'failed to decode'
+                packet_text = 'failed to decode'+str(e)
                 print('error detected:' ,e,)
-                
-            display.text('RX cmd: ', 0, 0, 1)
-            display.text(packet_text, 25, 0, 1)
-            Communications.transmit(packet_text)
+
+            Communications_crawler_side.transmit_to_crawler(packet_text)
+            display.text(packet_text, 0, 0, 1)
+            display.show()
+
 
         if not btnA.value:
             #toggle transmission
@@ -136,8 +137,8 @@ def startLongRangeTransceiver():
             rfm9x.send(bytes(message_to_send,"utf-8"))
 
         if enable_transmitting_crawler_data:
-            from_fpga =  Communications.data_frame['raw_data_from_fpga']
-            Communications.data_frame['raw_data_from_fpga'] = 'no new data'
+            from_fpga =  Communications_crawler_side.data_frame['raw_data_from_fpga']
+            Communications_crawler_side.data_frame['raw_data_from_fpga'] = 'no new data'
             rfm9x.send(bytes(str(from_fpga),"utf-8"))
             msg = "{}".format(from_fpga)
             #where text(string,x,y,column)
@@ -150,16 +151,16 @@ def startLongRangeTransceiver():
 
 if __name__ == '__main__':
     #Communications.consumer_portname =  Communications.show_serial_ports()[0]
-    Communications.consumer_portname =  r'/dev/serial0'
+    Communications_crawler_side.consumer_portname =  r'/dev/serial0'
 
     #serial thread for reading
-    serial_thread_read = threading.Thread(target = Communications.set_reader)
+    serial_thread_read = threading.Thread(target = Communications_crawler_side.set_reader)
     serial_thread_read.daemon = True #terminate when program ends
     print("starting data simulation")
     serial_thread_read.start()
 
     #serial thread for writing
-    serial_thread_write = threading.Thread(target = Communications.set_writer)
+    serial_thread_write = threading.Thread(target = Communications_crawler_side.set_writer)
     serial_thread_write.daemon = True #terminate when program ends
     print("starting data simulation")
     serial_thread_write.start()
