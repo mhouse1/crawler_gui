@@ -31,5 +31,14 @@ to ping raspberry and see ip addresses
 use command :ssh pi@raspberrypi.local
 password: raspberry
 
+
+
 give your pi a unique hostname
 details:https://thepihut.com/blogs/raspberry-pi-tutorials/19668676-renaming-your-raspberry-pi-the-hostname
+
+how to kill python
+pi@raspberrypi:/home/crawler_gui/GUI $ ps -ef | grep python3
+pi         746   656  0 01:35 pts/1    00:00:00 grep --color=auto python3
+pi@raspberrypi:/home/crawler_gui/GUI $ kill 746
+-bash: kill: (746) - No such process
+pi@raspberrypi:/home/crawler_gui/GUI $ kill 656
