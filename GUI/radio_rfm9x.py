@@ -18,6 +18,7 @@ import adafruit_ssd1306
 # Import RFM9x
 import adafruit_rfm9x
 
+
 #anything that gets put into this queue will be sent
 transmit_queue = queue.Queue()
 #data received
@@ -28,6 +29,12 @@ data_frame = {'incline':3
 
 rfm9x = None
 
+# Create the I2C interface.
+i2c = busio.I2C(board.SCL, board.SDA)
+
+# 128x32 OLED Display
+display = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c, addr=0x3c)
+
 def randomString(stringLength=10):
     """Generate a random string of fixed length """
     letters = string.ascii_lowercase
@@ -36,6 +43,7 @@ def randomString(stringLength=10):
 def startLongRangeTransceiver():
     '''transmit and receive'''
     global rfm9x
+    global display
 
     # Button A
     btnA = DigitalInOut(board.D5)
@@ -52,11 +60,8 @@ def startLongRangeTransceiver():
     btnC.direction = Direction.INPUT
     btnC.pull = Pull.UP
 
-    # Create the I2C interface.
-    i2c = busio.I2C(board.SCL, board.SDA)
 
-    # 128x32 OLED Display
-    display = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c, addr=0x3c)
+
     # Clear the display.
     display.fill(0)
     display.show()
@@ -104,7 +109,7 @@ def startLongRangeTransceiver():
             except Exception as e:
                 #packet_text = 'failed to decode'
                 print('error detected:' ,e,)
-            currentime = datetime.datetime.utcnow().strftime('%m-%d %H:%M:%S.%f')[:-3]
+            currentime = '0.1 '+datetime.datetime.utcnow().strftime('%m-%d %H:%M:%S.%f')[:-3]
             display.text(currentime, 0, 0, 1)
             display.text(packet_text[:20], 25, 10, 1)
             display.text(packet_text[20:], 25, 20, 1)
@@ -148,19 +153,22 @@ def startLongRangeTransceiver():
         time.sleep(0.2)
 
 def get_input():
-    global rfm9x
+    global rfm9x, display
 
     while True:
         message_to_send = input()
         print('sending:',message_to_send)
         rfm9x.send(bytes(message_to_send,"utf-8"))
+        display.fill(0)
+        display.text(message_to_send, 0, 0, 1)
+        display.show()
 
 if __name__ == '__main__':
 
     #serial thread for reading
     reader_thread = threading.Thread(target = get_input)
     reader_thread.daemon = True #terminate when program ends
-    print("starting  data reader")
+    print("starting  data reader 123")
     reader_thread.start()
 
     startLongRangeTransceiver()

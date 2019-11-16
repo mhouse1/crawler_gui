@@ -29,9 +29,11 @@ data_frame = {'incline':3, 'encoder1':3
               }
 
 def SendCommand(addr,val):
-    print('send command',addr,val)
-    vv=struct.pack('Hh',addr,val)
-    transmit(vv)
+    #print('send command',addr,val)
+    string_command = 'CMD:{},{}'.format(addr,val)
+    transmit(string_command)
+    # vv=struct.pack('Hh',addr,val)
+    # transmit(vv)
 
 def transmit(message, transmit_speed = 0):
     #where messages is a list of framed data
@@ -63,7 +65,7 @@ def transmit(message, transmit_speed = 0):
     #         myfile.write(str(ord(char))+' ')
     #         #myfile.write(char)
     #     #myfile.write(message[:-1])
-    
+    message = message+'\r'
     if transmit_speed == 0:
         #print 'putFast',message
         fast_queue.put(message)
@@ -187,7 +189,7 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
 
 
         elif start_user_side_radio:
-            com_handle.write('ls\r')
+            #com_handle.write('ls\r')
             com_handle.write('cd /home/crawler_gui/GUI\r')
             com_handle.write('python3 radio_rfm9x.py\r')
             start_user_side_radio = False
@@ -197,7 +199,7 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
 
         while not fast_queue.empty() and not stop_sending and consumer_portname:
             message_to_send = fast_queue.get()
-            print "TX: {}".format(message_to_send)
+            #print "TX: {} END".format(str(message_to_send))
             com_handle.write(message_to_send)
         time.sleep(0.5) 
         #print 'stopsend = {}'.format(stop_sending)
@@ -288,8 +290,8 @@ def set_reader():
         msg = data.decode('utf-8')
         if len(msg) > 0:
 
-            print'rd:',msg
-            data_parser.interpret_data(msg)
+            #print'rd:',msg
+            data_parser.interpret_data(msg.split('/r')[0])
             if 'Login incorrect' in msg:
                 com_handle.write('pi\r')
                 time.sleep(0.5)

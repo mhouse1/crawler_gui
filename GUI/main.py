@@ -324,3 +324,5 @@ if __name__ == "__main__":
     #GUI thread    
     main = CrawlerGUI()
     gtk.main()
+
+    print 'Terminated All Threads'
