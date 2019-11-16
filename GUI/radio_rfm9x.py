@@ -158,7 +158,7 @@ def get_input():
     while True:
         message_to_send = input()
         print('sending:',message_to_send)
-        rfm9x.send(bytes(message_to_send,"utf-8"))
+        #rfm9x.send(bytes(message_to_send,"utf-8"))
         display.fill(0)
         display.text(message_to_send, 0, 0, 1)
         display.show()
