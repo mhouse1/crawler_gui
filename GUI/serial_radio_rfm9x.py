@@ -75,7 +75,7 @@ def startLongRangeTransceiver():
         packet = None
         # draw a box to clear the image
         display.fill(0)
-        display.text('v0.2', 0, 0, 1)
+        display.text('v0.3', 0, 0, 1)
 
         # check for packet rx
         packet = rfm9x.receive()
@@ -141,6 +141,7 @@ def startLongRangeTransceiver():
         if enable_transmitting_crawler_data:
             from_fpga =  Communications_crawler_side.data_frame['raw_data_from_fpga']
             Communications_crawler_side.data_frame['raw_data_from_fpga'] = 'no new data'
+            from_fpga = from_fpga[:-2]+'$'+Communications_crawler_side.data_frame['processed command']
             rfm9x.send(bytes(str(from_fpga),"utf-8"))
             msg = "{}".format(from_fpga)
             #where text(string,x,y,column)
