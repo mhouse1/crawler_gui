@@ -12,7 +12,6 @@ from collections import OrderedDict
 import Communications, data_parser
 import simulate
 import gui_support
-from gui_support import GuiSupport
 import threading
 import multiprocessing
 import gobject
@@ -21,13 +20,12 @@ import gobject
 gobject.threads_init()
 
 script_location = os.path.dirname(os.path.abspath(__file__))
-class CrawlerGUI(GuiSupport):    
+class CrawlerGUI():    
     def __init__(self):
         '''
         inherits GUI support object and links it to GUI signals
         to provide an action to a user response.
         '''
-        super(CrawlerGUI,self).__init__()
         
         #read *.glade xml file that has the gui layout info
         #build the gui interface using xml file
@@ -53,18 +51,6 @@ class CrawlerGUI(GuiSupport):
         #use builder and config file handle to get config data
         #pass CfData cfg_file_handle because we want those items to be saved to cfg file too
         self.CNCConfigData = gui_support.CfgData(self.builder,self.cfg_file_handle)
-        
-        self.CNCCommand = gui_support.CncCommand(self.builder,self.cfg_file_handle)
-        self.SendSinleCFData = gui_support.SendSinleCFData(self.builder,self.cfg_file_handle)
-        self.ManualControlData = gui_support.ManualControlData(self.builder,self.cfg_file_handle)
-        
-        #drop down GUI objects used to set routing direction
-        xdirection_combo_options = ['left','right']
-        ydirection_combo_options = ['backward','forward']
-        zdirection_combo_options = ['counter-clockwise','clockwise']
-        self.DirXComboHandle = gui_support.GsComboBox(self.builder,'DirX',xdirection_combo_options)
-        self.DirYComboHandle = gui_support.GsComboBox(self.builder,'DirY',ydirection_combo_options)
-        self.DirZComboHandle = gui_support.GsComboBox(self.builder,'DirZ',zdirection_combo_options)
 
         #labels
         self.batteryLevel       = self.builder.get_object('label24')
@@ -90,20 +76,7 @@ class CrawlerGUI(GuiSupport):
         self.crawlerSpeed          = self.builder.get_object('speedScale')                        
         
         self.inclineLeftRight.set_digits(2)#sets number of display percisions
-        #self.inclineLeftRight.set_has_origin(True)#this does not work
-        
-        #self.inclineLeftRight.set_fill_level(float(12345))
-        #self.inclineLeftRight.set_vexpand(True)
-        #self.inclineLeftRight   = self.builder.get_object('hscale1')
-        #self.inclineLeftRight.set_digits()
-        
-        #self.inclineLeftRight.set_fill_level(float(12345))
-        #self.inclineLeftRight.set_value_pos(9)#not sure what this does
-        #self.inclineLeftRight.set_value(0)#this works to set value of scale
-        
-        #self.inclineLeftRight.set_vexpand(True)        
-
-        
+             
         #load GUI default values from a settings file                
         self.cfg_file_handle.load_settings()
         
@@ -129,6 +102,9 @@ class CrawlerGUI(GuiSupport):
             ('togglebutton7', False),
             ('togglebutton8', False),
         ])
+
+
+
     ###################### Actions for all signals#########################
     def on_speedScale_value_changed(self,widget):
         '''
@@ -151,9 +127,11 @@ class CrawlerGUI(GuiSupport):
         Communications.SendCommand(3,int(widget.get_text()))
 
     def on_checkbutton4_toggled(self,widget):
-        Communications.SendCommand(1,widget.get_active())
+        #check box for enable running
+        Communications.SendCommand(0,widget.get_active())
 
     def on_checkbutton5_toggled(self,widget):
+        #check box for enabling or disabling PI loop
         Communications.SendCommand(1,widget.get_active())
 
     def toggled_a_relay(self,widget):
@@ -195,11 +173,6 @@ class CrawlerGUI(GuiSupport):
             self.emergencyStopImage.set_from_file(os.path.join(script_location,'emergency2.jpg'))
         else:
             self.emergencyStopImage.set_from_file(os.path.join(script_location,'emergency1.png'))
-
-
-    def on_image7_button_press_event(self,widget):
-
-        print 'Send stop command'
 
     def on_togglebutton11_toggled(self,widget):
         #crawlForward = self.crawlForward.get_active()

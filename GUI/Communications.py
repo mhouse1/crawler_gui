@@ -17,6 +17,8 @@ import threading
 import Queue
 import struct
 
+import data_parser
+
 #active_serial = None
 serial_activated = False
 consumer_portname = None
@@ -29,9 +31,12 @@ data_frame = {'incline':3, 'encoder1':3
               }
 
 def SendCommand(addr,val):
+    if type(val) == bool:
+        val = 1 if val else 0
+    full_command = data_parser.generate_crawler_comand(addr,val)
     #print('send command',addr,val)
-    string_command = 'CMD:{},{}'.format(addr,val)
-    transmit(string_command)
+    #string_command = 'CMD:{},{}'.format(addr,val)
+    transmit(full_command)
     # vv=struct.pack('Hh',addr,val)
     # transmit(vv)
 
@@ -199,7 +204,7 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
 
         while not fast_queue.empty() and not stop_sending and consumer_portname:
             message_to_send = fast_queue.get()
-            #print "TX: {} END".format(str(message_to_send))
+            print "TX: {} ENDTX".format(str(message_to_send))
             com_handle.write(message_to_send)
         time.sleep(0.5) 
         #print 'stopsend = {}'.format(stop_sending)
