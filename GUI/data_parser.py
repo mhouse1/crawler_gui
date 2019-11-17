@@ -47,16 +47,17 @@ def interpret_data(raw_data = None):
     '''
     where raw data = 'Awake:c=(0,0,0,44), r=0'
     '''
-    global data_frame
-    print 'interpreting', raw_data
+    global data_frame, last_executed_command
+    #print 'interpreting', raw_data
     data = raw_data
     copy_raw_data = raw_data
     backup_data = data_frame
     if 'Awake:' in raw_data:
-        data=raw_data.split('Awake:')[1]
-        data=raw_data.split('/r')[0]
-        if 'CMD:' in data:
-            return data
+        split_into_status_and_last_executed = raw_data.split('$')
+        last_executed_command = split_into_status_and_last_executed[1][:-1]
+        data=split_into_status_and_last_executed[0].split('Awake:')[1]
+        data=split_into_status_and_last_executed[0].split('/r')[0]
+        #print 'last_executed_command',last_executed_command
         try:
             #char stripping
             for ch in ['(',')',]:
@@ -79,8 +80,6 @@ def interpret_data(raw_data = None):
                             
                         }
             
-            #the last element in data received is always last_executed_command
-            last_executed_command = data[-1][1]
 
             #convert data in data_frame into int format
             for key in data_frame:

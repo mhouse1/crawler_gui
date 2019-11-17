@@ -81,7 +81,7 @@ def startLongRangeTransceiver():
 
 
     enable_transmission_test = False
-    radio_fw_version = '0.2'
+    radio_fw_version = '0.3'
     print('starting Terrafirma Technology LoRa '+radio_fw_version)
     while True:
         packet = None
@@ -101,8 +101,9 @@ def startLongRangeTransceiver():
         else:
             # Display the packet text and rssi
             display.fill(0)
-            packet_text = str(packet, "utf-8")
+           
             try:
+                packet_text = str(packet, "utf-8")
                 print('rcvd:',packet_text)
             except Exception as e:
                 #packet_text = 'failed to decode'

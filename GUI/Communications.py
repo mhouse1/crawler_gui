@@ -151,7 +151,7 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
     global stop_sending
     global serial_activated
 
-    transmit_attempts = 5
+    transmit_attempts = 10
     
     # print 'waiting for serial selection'
     # while consumer_portname is None:
@@ -219,11 +219,14 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
                 #if no confirmation command processed send command again
                 if not data_parser.last_executed_command == message_to_send:
                     com_handle.write(message_to_send)
-                    print('re:',message_to_send)
+                    print('txd:',message_to_send)
+                else:
+                    print 'successfully executed', message_to_send
+                    break
                 tries += 1
                 time.sleep(2)
             if tries >= transmit_attempts:
-                print 'TIMEDOUT, failed to transmit:',message_to_send 
+                print 'TIMEDOUT, failed to execute:',message_to_send 
                 print 'Expected confirmation command processed'
                 
         time.sleep(0.5) 
