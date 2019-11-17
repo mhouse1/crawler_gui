@@ -94,6 +94,17 @@ def interpret_data(raw_data = None):
             data_frame = backup_data
          
     return data
+
+def decode_crawler_command(message):
+    '''
+    given a string command decode into a list of address and values
+    '''
+    #decode into ['1,23', '2,2', '10,3']
+    decoded =  [x for x in message.split(':')[1].split('#') if len(x) > 0]
+    decoded = [x.split(',') for x in decoded]
+
+    return decoded
+
 if __name__ == "__main__":
     print interpret_data('Awake:c=(0,0,0,44), r=0')
     print data_frame
@@ -106,4 +117,5 @@ if __name__ == "__main__":
     print generate_crawler_comand(10,2)
     full_command =  generate_crawler_comand(10,3)
     #decode into ['1,23', '2,2', '10,3']
-    print decode_crawler_command(full_command)
+    parsed_data =  decode_crawler_command(full_command)
+    print parsed_data[:-1]

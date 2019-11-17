@@ -26,16 +26,23 @@ fast_queue = Queue.Queue()
 slow_queue = Queue.Queue()
 
 data_frame = {#'incline':3, 'encoder1':3,
-              'raw_data_from_fpga':'empty'
+              'raw_data_from_fpga':'empty',
+              'processed command': 'no commands processed yet',
               }
 stop_sending = False
+
 
 def decode_crawler_command(message):
     '''
     given a string command decode into a list of address and values
     '''
-    return [x for x in message.split(':')[1].split('#') if len(x) > 0]
-
+    #decode into ['1,23', '2,2', '10,3']
+    try:
+        decoded =  [x for x in message.split(':')[1].split('#') if len(x) > 0]
+        decoded = [x.split(',') for x in decoded]
+    except:
+        print('failed to decode', message)
+    return decoded
 
 def transmit_to_crawler(message):
     '''
@@ -45,14 +52,21 @@ def transmit_to_crawler(message):
     where address 2 corresponds to speed and value=50%
     '''
     
-    parsed_data = decode_crawler_command(message).split(',')
+    parsed_data = decode_crawler_command(message)
     #parsed_data = message.split(':')[1].split(',')
     #return parsed_data
-    addr = int(parsed_data[0])
-    val = int(parsed_data[1])
-    vv=struct.pack('Hh',addr,val)
-    fast_queue.put(vv)
-    return vv
+
+    #transmit everything from parsed_data as command except last one
+    #reserved for confirmation
+    for command in parsed_data:
+        addr = int(command[0])
+        val = int(command[1])
+        print('queued:',addr, val)
+        vv=struct.pack('Hh',addr,val)
+        fast_queue.put(vv)
+    data_frame['processed command'] = message
+    print('processed command:',message)
+    return message
 
 def show_serial_ports():
     """ Lists serial port names
