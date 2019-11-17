@@ -7,7 +7,7 @@
                 includes serial thread
 """
 # Import Python System Libraries
-import time, datetime, random, string, Communications_crawler_side, threading
+import time, datetime, random, string, threading
 import queue
 
 # Import Blinka Libraries
@@ -18,6 +18,8 @@ import board
 import adafruit_ssd1306
 # Import RFM9x
 import adafruit_rfm9x
+
+import Communications_crawler_side
 
 #anything that gets put into this queue will be sent
 transmit_queue = queue.Queue()

@@ -80,6 +80,27 @@ class CrawlerGUI():
         #load GUI default values from a settings file                
         self.cfg_file_handle.load_settings()
         
+        self.autoConnect          = self.builder.get_object('autoConnect')  
+        if self.autoConnect.get_active():
+            print('auto connecting')
+            self.ComComboHandle.rescan()
+            try:
+                widget = self.builder.get_object('Com_channel_combo_box')
+                #self.index = widget.get_active() #index indicate the nth item current selected in combobox
+                self.index = 1
+                self.model = widget.get_model()
+                self.item = self.model[self.index][1] #item is the text in combo box
+
+                #set selection state 0 as a false state
+                if not self.index == 0:
+                    print('selected', self.item)
+                    Communications.consumer_portname = self.item
+                    Communications.serial_activated = True
+            except:
+                #print(str(e))
+                print('could not auto connect to radio, make sure its plugged in and nothing is already using it ')
+        
+
         #set current gcode file to whatever file path is 
         #displayed in the GCode file path text box
         self.set_gcode_file()
@@ -262,11 +283,16 @@ class CrawlerGUI():
         '''
         save a configuration file before terminating GUI thread
         '''
+        #send ascii for ctrl-c  to radio to terminate python script
+        Communications.com_handle.write('\x03')
         self.cfg_file_handle.save_config_file()
         gtk.main_quit()
         
     def data_update(self):
-        print 'called data update'
+        '''
+        runs periodically to update GUI data
+        '''
+        #print 'called data update'
         if data_parser.data_frame:
             self.encoder1.set_text(str(data_parser.data_frame['encoder1']))
             self.encoder2.set_text(str(data_parser.data_frame['encoder2']))

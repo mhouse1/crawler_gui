@@ -27,7 +27,12 @@ receive_queue = queue.Queue()
 data_frame = {'incline':3
     }
 
-rfm9x = None
+# Configure LoRa Radio
+CS = DigitalInOut(board.CE1)
+RESET = DigitalInOut(board.D25)
+spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, 915.0)
+rfm9x.tx_power = 23
 
 # Create the I2C interface.
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -41,7 +46,12 @@ def randomString(stringLength=10):
     return ''.join(random.choice(letters) for i in range(stringLength))
 
 def startLongRangeTransceiver():
-    '''transmit and receive'''
+    '''transmit and receive
+
+    transmits only button press data
+
+    receives data from crawler side radio
+    '''
     global rfm9x
     global display
 
@@ -68,22 +78,16 @@ def startLongRangeTransceiver():
     width = display.width
     height = display.height
 
-    # Configure LoRa Radio
-    CS = DigitalInOut(board.CE1)
-    RESET = DigitalInOut(board.D25)
-    spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-    rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, 915.0)
-    rfm9x.tx_power = 23
-    prev_packet = None
+
 
     enable_transmission_test = False
-    
-    print('starting Terrafirma Technology LoRa')
+    radio_fw_version = '0.2'
+    print('starting Terrafirma Technology LoRa '+radio_fw_version)
     while True:
         packet = None
         # draw a box to clear the image
         display.fill(0)
-        display.text('Terrafirma Technology', 0, 0, 1)
+        display.text('Terrafirma '+radio_fw_version, 0, 0, 1)
 
         # check for packet rx
         packet = rfm9x.receive(keep_listening = True)
@@ -99,13 +103,7 @@ def startLongRangeTransceiver():
             display.fill(0)
             packet_text = str(packet, "utf-8")
             try:
-                print('received:',packet_text)
-                # packet_text = str(prev_packet, "utf-8")
-                # packet_text.split(',')
-                # data_frame['incline'] = int(packet_text[0])
-                # data_frame['encoder1'] = int(packet_text[1])
-                # print('received incline:',int(data_frame['incline']))
-                # print('received encoder:',int(data_frame['encoder1']))
+                print('rcvd:',packet_text)
             except Exception as e:
                 #packet_text = 'failed to decode'
                 print('error detected:' ,e,)
@@ -153,12 +151,15 @@ def startLongRangeTransceiver():
         time.sleep(0.2)
 
 def get_input():
+    '''
+    get input from terminal, and send using LoRa 
+    '''
     global rfm9x, display
 
     while True:
         message_to_send = input()
-        print('sending:',message_to_send)
-        #rfm9x.send(bytes(message_to_send,"utf-8"))
+        #print('sending:',message_to_send)
+        rfm9x.send(bytes(message_to_send,"utf-8"))
         display.fill(0)
         display.text(message_to_send, 0, 0, 1)
         display.show()

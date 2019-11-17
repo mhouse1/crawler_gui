@@ -8,6 +8,7 @@ Created on Nov. 12, 2019
 import traceback, sys
 from collections import OrderedDict 
 data_frame = None
+last_executed_command = None
 
 crawler_commands = OrderedDict()
 
@@ -31,11 +32,6 @@ def generate_crawler_comand(address, value):
             command_string+=','.join([str(key),str(value)])+'#'
     return command_string
 
-def decode_crawler_command(message):
-    '''
-    given a string command decode into a list of address and values
-    '''
-    return [x for x in message.split(':')[1].split('#') if len(x) > 0]
 
 def check_valid(data):
     '''
@@ -72,6 +68,7 @@ def interpret_data(raw_data = None):
             #convert into format: [['0', '0', '0', '44', ''], ['0']]
             data =[ x.split(',') for x in data]
 
+            #parse the received data from radio
             data_frame = {
                             'encoder1': data[0][0],
                             'encoder2':  data[0][1],
@@ -79,8 +76,13 @@ def interpret_data(raw_data = None):
                             'encoder4':  data[0][3],
                             'roll':  data[1][0],
                             'pitch':  data[1][0],
+                            
                         }
+            
+            #the last element in data received is always last_executed_command
+            last_executed_command = data[-1][1]
 
+            #convert data in data_frame into int format
             for key in data_frame:
                 data_frame[key] = int(data_frame[key])
 

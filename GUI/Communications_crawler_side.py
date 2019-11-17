@@ -30,6 +30,13 @@ data_frame = {#'incline':3, 'encoder1':3,
               }
 stop_sending = False
 
+def decode_crawler_command(message):
+    '''
+    given a string command decode into a list of address and values
+    '''
+    return [x for x in message.split(':')[1].split('#') if len(x) > 0]
+
+
 def transmit_to_crawler(message):
     '''
     assuming message is format: "cmd:<address>,<value>"
@@ -37,21 +44,15 @@ def transmit_to_crawler(message):
     for example: message="cmd:2,50"
     where address 2 corresponds to speed and value=50%
     '''
-    parsed_data = message.split(':')[1].split(',')
+    
+    parsed_data = decode_crawler_command(message).split(',')
+    #parsed_data = message.split(':')[1].split(',')
     #return parsed_data
     addr = int(parsed_data[0])
     val = int(parsed_data[1])
     vv=struct.pack('Hh',addr,val)
     fast_queue.put(vv)
     return vv
-
-def transmit(message, transmit_speed = 0):
-    if transmit_speed == 0:
-        #print 'putFast',message
-        fast_queue.put(data_parser.transmit_to_crawler(message))
-    else:
-        #print 'putSlow',message
-        slow_queue.put(data_parser.transmit_to_crawler(message))
 
 def show_serial_ports():
     """ Lists serial port names

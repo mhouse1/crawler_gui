@@ -23,6 +23,8 @@ import data_parser
 serial_activated = False
 consumer_portname = None
 com_handle = None
+logged_in_into_user_side_radio = False
+
 fast_queue = Queue.Queue()
 slow_queue = Queue.Queue()
 stop_sending = False
@@ -73,7 +75,9 @@ def transmit(message, transmit_speed = 0):
     message = message+'\r'
     if transmit_speed == 0:
         #print 'putFast',message
+        fast_queue.queue.clear()
         fast_queue.put(message)
+        
     else:
         #print 'putSlow',message
         slow_queue.put(message)
@@ -146,6 +150,8 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
     global com_handle
     global stop_sending
     global serial_activated
+
+    transmit_attempts = 5
     
     # print 'waiting for serial selection'
     # while consumer_portname is None:
@@ -191,39 +197,45 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
 
             serial_activated = True
             start_user_side_radio = True
-
-
         elif start_user_side_radio:
             #com_handle.write('ls\r')
             com_handle.write('cd /home/crawler_gui/GUI\r')
-            com_handle.write('python3 radio_rfm9x.py\r')
+            com_handle.write('python3 user_side_radio_rfm9x.py\r')
             start_user_side_radio = False
             #com_handle.write('ls\r')
             #data = 'ls'
 
-
+        #transmit messages to crawler
         while not fast_queue.empty() and not stop_sending and consumer_portname:
-            message_to_send = fast_queue.get()
-            print "TX: {} ENDTX".format(str(message_to_send))
-            com_handle.write(message_to_send)
+            #send commands and keep trying until timeout
+            #if a command data has been updated send that instead and reset number of attemps
+            tries = 0
+            while tries <= transmit_attempts:
+                if not fast_queue.empty():
+                    
+                    message_to_send = fast_queue.get()
+                    print "TX: {} ENDTX".format(str(message_to_send))
+                    tries = 0
+                #if no confirmation command processed send command again
+                if not data_parser.last_executed_command == message_to_send:
+                    com_handle.write(message_to_send)
+                    print('re:',message_to_send)
+                tries += 1
+                time.sleep(2)
+            if tries >= transmit_attempts:
+                print 'TIMEDOUT, failed to transmit:',message_to_send 
+                print 'Expected confirmation command processed'
+                
         time.sleep(0.5) 
-        #print 'stopsend = {}'.format(stop_sending)
-        while not slow_queue.empty() and fast_queue.empty() and not stop_sending and consumer_portname:
-            message_to_send = slow_queue.get()
-            #print "OutS: {}".format(message_to_send)
-            com_handle.write(message_to_send)
-            #put a little delay so firwmare receiver buffer does not overflow before
-            #it can set stop_sending, not the delay must be long enough so the buffer
-            #does not overflow, and short enough so firmware does not run out of data to consume
-            time.sleep(0.01)
-            #set a delay for slow transfer queue
-            #break out of delay early if detected fast_queue not empty
-#             for i in xrange(2):
-#                 if not fast_queue.empty():
-#                     break
-#                 time.sleep(0.1)#interval to check fast_queue is not empty
-        #stop_sending = False
-        
+        # while not slow_queue.empty() and fast_queue.empty() and not stop_sending and consumer_portname:
+        #     message_to_send = slow_queue.get()
+        #     #print "OutS: {}".format(message_to_send)
+        #     com_handle.write(message_to_send)
+        #     #put a little delay so firwmare receiver buffer does not overflow before
+        #     #it can set stop_sending, not the delay must be long enough so the buffer
+        #     #does not overflow, and short enough so firmware does not run out of data to consume
+        #     time.sleep(0.01)
+
 
 # def set_reader():
 #     '''sets the active serial channel
@@ -282,6 +294,7 @@ def set_reader():
     global stop_sending
     global data_frame
     global robot_data
+    global logged_in_into_user_side_radio
 
     while com_handle is None:
         time.sleep(1)
@@ -301,6 +314,7 @@ def set_reader():
                 com_handle.write('pi\r')
                 time.sleep(0.5)
                 com_handle.write('raspberry\r')
+                logged_in_into_user_side_radio = True
 
             #convert "read: Awake:c=0, r=0" into "parsed: ['c', '0, r', '0']"
             # try:

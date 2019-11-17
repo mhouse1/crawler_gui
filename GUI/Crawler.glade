@@ -868,7 +868,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckButton" id="checkbutton1">
+                      <object class="GtkCheckButton" id="autoConnect">
                         <property name="label" translatable="yes">Auto-Connect to Crawler </property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>

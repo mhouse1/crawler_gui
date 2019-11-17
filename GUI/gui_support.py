@@ -40,6 +40,7 @@ class CfgFile:
         #a list of names of objects classfied as settings
         self.settings =[
                         'GCode_File_Location'
+                        ,'autoConnect'
                         # ,'reverse_x'
                         # ,'reverse_y'
                         # ,'reverse_z'
@@ -75,7 +76,7 @@ class CfgFile:
                 except Exception, err:
                     print err     
         self.config_object.write(open(self.config_file_name,'w'))
-        print 'saved Kshatria config file'
+        print 'saved config file'
         
     def load_settings(self):
         '''create and fill config file if it does not exist
