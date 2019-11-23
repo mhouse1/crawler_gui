@@ -278,6 +278,17 @@ class CrawlerGUI():
             self.fcd.destroy()
             self.GTKGCode_File.set_text(self.gcode_file)
     
+    def on_shutdown_clicked(self,widget):
+        '''
+        shut down the user side LoRa radio before disconnecting power
+        '''
+        print('shutting down radio...')
+        Communications.com_handle.write('shutdown radio now')
+        # time.sleep(1)
+        # Communications.com_handle.write('\x03')
+        # time.sleep(1)
+        # Communications.com_handle.write('sudo shutdown -r now')
+
     ###################### End of actions for all signals#################
     def _quit_program(self):
         '''

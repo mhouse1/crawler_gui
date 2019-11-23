@@ -311,9 +311,10 @@ def set_reader():
         msg = data.decode('utf-8')
         if len(msg) > 0:
 
-            #print'rd:',msg
+            print'rd:',msg
             data_parser.interpret_data(msg.split('/r')[0])
-            if 'Login incorrect' in msg:
+            if 'Login incorrect' in msg or 'raspberrypi1 login:' in msg:
+                time.sleep(1)
                 com_handle.write('pi\r')
                 time.sleep(0.5)
                 com_handle.write('raspberry\r')

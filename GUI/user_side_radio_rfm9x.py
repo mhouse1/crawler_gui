@@ -6,7 +6,7 @@
 @details         Long Range Communication via LoRa rfm9x chips
 """
 # Import Python System Libraries
-import time, datetime, random, string, threading
+import time, datetime, random, string, threading, sys, os
 import queue
 
 # Import Blinka Libraries
@@ -81,7 +81,7 @@ def startLongRangeTransceiver():
 
 
     enable_transmission_test = False
-    radio_fw_version = '0.3'
+    radio_fw_version = '0.5'
     print('starting Terrafirma Technology LoRa '+radio_fw_version)
     while True:
         packet = None
@@ -159,6 +159,13 @@ def get_input():
 
     while True:
         message_to_send = input()
+        if 'shutdown radio now' in message_to_send:
+            display.fill(0)
+            display.text('Ready to Unplug', 0, 0, 1)
+            display.show()
+            os.system('sudo shutdown -r now')
+            sys.exit(0)
+
         #print('sending:',message_to_send)
         rfm9x.send(bytes(message_to_send,"utf-8"))
         display.fill(0)
