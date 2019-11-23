@@ -124,9 +124,25 @@ class CrawlerGUI():
             ('togglebutton8', False),
         ])
 
-
+        self.radiation_on = False
 
     ###################### Actions for all signals#########################
+    def on_togglebutton1_toggled(self,widget):
+        if self.radiation_on == False:
+            d = gtk.Dialog()
+            d.add_buttons(gtk.STOCK_YES, 1, gtk.STOCK_NO, 2)
+
+            label = gtk.Label('Warning! You are about to enable radiation, are you sure?')
+            label.show()
+            d.vbox.pack_start(label)
+
+            answer = d.run()
+            d.destroy()
+            self.radiation_on = True
+            return True
+        if self.radiation_on == True:
+            self.radiation_on = False
+
     def on_speedScale_value_changed(self,widget):
         '''
         set percentage of speed

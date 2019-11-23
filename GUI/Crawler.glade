@@ -644,6 +644,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <signal name="toggled" handler="toggled_a_relay" swapped="no"/>
+                                    <signal name="toggled" handler="on_togglebutton1_toggled" swapped="no"/>
                                   </object>
                                 </child>
                                 <child>
