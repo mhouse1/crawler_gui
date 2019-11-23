@@ -105,11 +105,11 @@ def decode_crawler_command(message):
     return decoded
 
 if __name__ == "__main__":
-    print interpret_data('Awake:c=(0,0,0,44), r=0')
-    print data_frame
+    # print interpret_data('Awake:c=(0,0,0,44), r=0')
+    # print data_frame
 
-    print interpret_data('Awake:c=(0,0,0,44), r=-10')
-    print data_frame
+    # print interpret_data('Awake:c=(0,0,0,44), r=-10')
+    # print data_frame
 
     print generate_crawler_comand(1,23)
     print generate_crawler_comand(2,2)
