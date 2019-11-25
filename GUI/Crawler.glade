@@ -530,7 +530,6 @@
                                         <property name="can_focus">True</property>
                                         <property name="events">GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
                                         <property name="tooltip_text" translatable="yes">speed</property>
-                                        <property name="update_policy">delayed</property>
                                         <property name="adjustment">adjustment5</property>
                                         <property name="round_digits">1</property>
                                         <property name="digits">0</property>
@@ -1043,7 +1042,6 @@
                         <property name="can_focus">True</property>
                         <property name="events">GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
                         <property name="tooltip_text" translatable="yes">speed</property>
-                        <property name="update_policy">delayed</property>
                         <property name="adjustment">adjustment8</property>
                         <property name="round_digits">0</property>
                         <property name="digits">0</property>
@@ -1060,7 +1058,6 @@
                         <property name="can_focus">True</property>
                         <property name="events">GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
                         <property name="tooltip_text" translatable="yes">speed</property>
-                        <property name="update_policy">delayed</property>
                         <property name="adjustment">adjustment9</property>
                         <property name="round_digits">0</property>
                         <property name="digits">0</property>

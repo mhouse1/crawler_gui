@@ -13,7 +13,9 @@ from future import standard_library
 standard_library.install_aliases()
 from builtins import range
 from builtins import object
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk as gtk
 import os
 import configparser
 import sys

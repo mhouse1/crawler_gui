@@ -9,7 +9,9 @@ Created on Nov. 13, 2019
 from __future__ import print_function
 from builtins import str
 from builtins import object
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk as gtk
 import time, os
 from collections import OrderedDict 
 
@@ -18,7 +20,7 @@ import simulate
 import gui_support
 import threading
 import multiprocessing
-import gobject
+from gi.repository import GObject as gobject
 
 #Allow only the main thread to touch the GUI (gtk) part, while letting other threads do background work.
 gobject.threads_init()
