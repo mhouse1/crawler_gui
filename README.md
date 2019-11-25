@@ -45,7 +45,7 @@ pi@raspberrypi:/home/crawler_gui/GUI $ kill 746
 pi@raspberrypi:/home/crawler_gui/GUI $ kill 656
 
 Installation:
-pygtk-all-in-one-2.24.2.win32-py2.7.msi (31.6MB)
-Python 2.7.8
+https://pygobject.readthedocs.io/en/latest/getting_started.html#windows-logo-windows
+Python 3.7.4
 Windows 10
 
