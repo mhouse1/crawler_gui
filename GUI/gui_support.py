@@ -8,9 +8,14 @@ Created on Aug 24, 2014
           All the communication is sent via a parallel process that is launched when the user
           configures the communication port.
 '''
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from builtins import object
 import gtk
 import os
-import ConfigParser
+import configparser
 import sys
 
 import Communications
@@ -26,7 +31,7 @@ def get_bin_with_padding(number,padding):
         value = ('0b'+("{:0%db}"%padding).format(number))[2:]
     return value
 
-class CfgFile:
+class CfgFile(object):
     ''' manages a GUI configuration file 
     has the ability to create, save, and load configuration file
     configuration data saved is typically data in text boxes, combo boxes, and other object states
@@ -34,7 +39,7 @@ class CfgFile:
     '''
     def __init__(self,builder):
         self.builder = builder
-        self.config_object = ConfigParser.ConfigParser()
+        self.config_object = configparser.ConfigParser()
         self.config_file_name = 'config.ini'
         
         #a list of names of objects classfied as settings
@@ -58,7 +63,7 @@ class CfgFile:
         config_object.add_section('settings')
         config_object.write(f)
         f.close()
-        print 'created Kshatria config file'
+        print('created Kshatria config file')
         
     def save_config_file(self):
         #self.config_object.set('settings', 'g-code file','none')
@@ -68,15 +73,15 @@ class CfgFile:
             if obj.__class__.__name__ == 'Entry':
                 try:
                     self.config_object.set('settings', item,obj.get_text())
-                except Exception, err:
-                    print err
+                except Exception as err:
+                    print(err)
             elif obj.__class__.__name__ == 'CheckButton':
                 try:
                     self.config_object.set('settings', item,obj.get_active())
-                except Exception, err:
-                    print err     
+                except Exception as err:
+                    print(err)     
         self.config_object.write(open(self.config_file_name,'w'))
-        print 'saved config file'
+        print('saved config file')
         
     def load_settings(self):
         '''create and fill config file if it does not exist
@@ -97,21 +102,21 @@ class CfgFile:
             if obj.__class__.__name__ == 'Entry':
                 if item == 'GCode_File_Location':
                     self.gcode_file = self.config_object.get('settings', item)
-                    print 'set gcode file to ',self.gcode_file
+                    print('set gcode file to ',self.gcode_file)
                 try:
                     obj.set_text(self.config_object.get('settings', item))
-                except Exception, err:
-                    print err
+                except Exception as err:
+                    print(err)
             elif obj.__class__.__name__ == 'CheckButton':
                 try:
                     obj.set_active( 1 if 'True' == self.config_object.get('settings',item ) else 0)
-                except Exception, err:
-                    print err     
+                except Exception as err:
+                    print(err)     
         #self.GTKGCode_File.set_text(self.config_object.get('settings', 'g-code file'))
 
-        print 'loaded config file'
+        print('loaded config file')
 
-class CfgData:
+class CfgData(object):
     def __init__(self, builder,cfg_handle):
         #cfg_file.__init__(self)
         self.CfObjects = []
@@ -172,7 +177,7 @@ def get_com_port_list():
         liststore.append([port_number,Com_List[port_number]])
     return liststore
         
-class ComCombo:
+class ComCombo(object):
     '''deals with the combo box that allow selection of com port to use
     '''
     def __init__(self,builder):
@@ -197,7 +202,7 @@ class ComCombo:
         self.Com_channel_combo.set_model(get_com_port_list())
     
 
-class GsComboBox:
+class GsComboBox(object):
     '''deals with the combo box that allow selection of com port to use
     '''
     def __init__(self,builder,obj_name, options):
@@ -239,7 +244,7 @@ class GsComboBox:
         index = self.combo_obj.get_active()
         return index        
                     
-class DirectionCombo:
+class DirectionCombo(object):
     '''deals with the combo box that allow selection direction
     '''
     def __init__(self,builder,name):

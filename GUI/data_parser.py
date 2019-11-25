@@ -5,6 +5,8 @@ Created on Nov. 12, 2019
 
 @brief    parse data strings and return a dictionary of robot values
 '''
+from __future__ import print_function
+from builtins import str
 import traceback, sys
 from collections import OrderedDict 
 data_frame = None
@@ -39,7 +41,7 @@ def check_valid(data):
     '''
     if 'Awake:' in data:
         if 'CMD:' in data:
-            print 'need fix:',data,' END'
+            print('need fix:',data,' END')
         return True
     
 
@@ -87,9 +89,9 @@ def interpret_data(raw_data = None):
 
         except Exception as e:
             traceback.print_exc(file=sys.stdout)
-            print 'ERROR EXCEPTION: ',str(e)
-            print 'ERROR: failed to inpterpret received data:',copy_raw_data
-            print 'data frame',data_frame
+            print('ERROR EXCEPTION: ',str(e))
+            print('ERROR: failed to inpterpret received data:',copy_raw_data)
+            print('data frame',data_frame)
             data_frame = backup_data
          
     return data
@@ -111,10 +113,10 @@ if __name__ == "__main__":
     # print interpret_data('Awake:c=(0,0,0,44), r=-10')
     # print data_frame
 
-    print generate_crawler_comand(1,23)
-    print generate_crawler_comand(2,2)
-    print generate_crawler_comand(10,2)
+    print(generate_crawler_comand(1,23))
+    print(generate_crawler_comand(2,2))
+    print(generate_crawler_comand(10,2))
     full_command =  generate_crawler_comand(10,3)
     #decode into ['1,23', '2,2', '10,3']
     parsed_data =  decode_crawler_command(full_command)
-    print parsed_data[:-1]
+    print(parsed_data[:-1])

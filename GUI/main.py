@@ -5,6 +5,9 @@ Created on Nov. 13, 2019
 
 @details    crawler GUI
 '''
+from __future__ import print_function
+from builtins import str
+from builtins import object
 import gtk
 import time, os
 from collections import OrderedDict 
@@ -20,7 +23,7 @@ import gobject
 gobject.threads_init()
 
 script_location = os.path.dirname(os.path.abspath(__file__))
-class CrawlerGUI():    
+class CrawlerGUI(object):    
     def __init__(self):
         '''
         inherits GUI support object and links it to GUI signals
@@ -93,7 +96,7 @@ class CrawlerGUI():
 
                 #set selection state 0 as a false state
                 if not self.index == 0:
-                    print('selected', self.item)
+                    print(('selected', self.item))
                     Communications.consumer_portname = self.item
                     Communications.serial_activated = True
             except:
@@ -198,13 +201,13 @@ class CrawlerGUI():
 
         if not status:
             widget.set_label('REVERSE')
-            print 'send direction command',status
+            print('send direction command',status)
         else:
             widget.set_label('FORWARD')
-            print 'send direction command',status
+            print('send direction command',status)
     
     def on_eventbox1_button_press_event(self,a,b):
-        print 'eventbox pressed'
+        print('eventbox pressed')
         self.emergencyToggle = not self.emergencyToggle
         if self.emergencyToggle:
             self.emergencyStopImage.set_from_file(os.path.join(script_location,'emergency2.jpg'))
@@ -215,7 +218,7 @@ class CrawlerGUI():
         #crawlForward = self.crawlForward.get_active()
         #crawlReverse = self.crawlReverse.get_active()
         disableBalancing = self.disableBalancing.get_active()
-        print 'send disable balancing ', disableBalancing
+        print('send disable balancing ', disableBalancing)
         # if manual == True:
         #     self.toggleAutonomous.set_active(False)
         #     self.toggleSemiAuto.set_active(False)
@@ -242,7 +245,7 @@ class CrawlerGUI():
 
         #set selection state 0 as a false state
         if not self.index == 0:
-            print('selected', self.item)
+            print(('selected', self.item))
             Communications.consumer_portname = self.item
             Communications.serial_activated = True
         #self.builder.get_object("label1").set_text(self.item)
@@ -254,20 +257,20 @@ class CrawlerGUI():
         '''
         self.tab = notebook.get_nth_page(page_num)
         self.switched_page = notebook.get_tab_label(self.tab).get_label()
-        print 'switched to page ',self.switched_page
+        print('switched to page ',self.switched_page)
     
     def on_Quit_activate(self,widget, data = None):
         '''
         exit gui and save config file
         '''
-        print 'quitting...'
+        print('quitting...')
         self._quit_program()
     
     def on_window1_destroy(self, widget, data = None):
         '''
         exit gui and save config file
         '''
-        print 'quitting...'
+        print('quitting...')
         self._quit_program()
     
     def set_gcode_file(self):
@@ -283,14 +286,14 @@ class CrawlerGUI():
         on button press open file chooser window to allow user to select 
         gcode file to use for routing
         '''
-        print 'Browsing for GCode file'
+        print('Browsing for GCode file')
         self.fcd = gtk.FileChooserDialog("Open...",None,gtk.FILE_CHOOSER_ACTION_OPEN,
                  (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
                   gtk.STOCK_OPEN, gtk.RESPONSE_OK))
         self.response = self.fcd.run()
         if self.response == gtk.RESPONSE_OK:
             self.gcode_file = self.fcd.get_filename()
-            print "Selected filepath: %s" % self.gcode_file
+            print("Selected filepath: %s" % self.gcode_file)
             self.fcd.destroy()
             self.GTKGCode_File.set_text(self.gcode_file)
     
@@ -332,7 +335,7 @@ class CrawlerGUI():
         gobject.timeout_add(1000,self.data_update)
 
 if __name__ == "__main__":
-    print 'starting crawler GUI'
+    print('starting crawler GUI')
     #start communication for reading and writing
     comthreadWriter = threading.Thread(target = Communications.set_writer)
     comthreadWriter.daemon = True #terminate thread when program ends
@@ -351,4 +354,4 @@ if __name__ == "__main__":
     main = CrawlerGUI()
     gtk.main()
 
-    print 'Terminated All Threads'
+    print('Terminated All Threads')

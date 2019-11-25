@@ -7,6 +7,12 @@ Created on Aug 9, 2014
             Supported features: ability to list serial ports available, set active serial port,
                                 buffer messages to be sent into a queue and send using a parallel process
 '''
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import input
+from builtins import str
+from builtins import range
 import os, sys, glob
 
 import serial
@@ -14,13 +20,13 @@ from serial.tools import list_ports
 import time
 import multiprocessing
 import threading
-import Queue
+import queue
 #active_serial = None
 serial_activated = False
 consumer_portname = None
 com_handle = None
-fast_queue = Queue.Queue()
-slow_queue = Queue.Queue()
+fast_queue = queue.Queue()
+slow_queue = queue.Queue()
 stop_sending = False
 
 
@@ -144,13 +150,13 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
     #if the fast queue is not empty and stop_sending is not active.
     
     while True:
-        print '+',
+        print('+', end=' ')
         sys.stdout.flush()
         if consumer_portname is None:
-            print 'waiting for serial selection'
+            print('waiting for serial selection')
             while consumer_portname is None:
                 time.sleep(1)
-                print '.',
+                print('.', end=' ')
                 sys.stdout.flush()
                 
             com_handle = serial.Serial(port = consumer_portname,baudrate = 115200)
@@ -158,7 +164,7 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
             com_handle.write('raspberry/r/n')
             com_handle.write('cd /home')
             com_handle.write('ls')
-            print('connected to ',consumer_portname)
+            print(('connected to ',consumer_portname))
 
         while not fast_queue.empty() and not stop_sending and consumer_portname:
             message_to_send = fast_queue.get()
@@ -188,7 +194,7 @@ def set_reader():
     
         this function will be called once when the GUI first initializes
     '''
-    print 'waiting for serial selection'
+    print('waiting for serial selection')
     global stop_sending
 
     while True:
@@ -201,12 +207,12 @@ def set_reader():
             while com_handle is None:
                 time.sleep(1)
                 #print '=',
-            print 'starting reader'
+            print('starting reader')
         #time.sleep(0.3)
         else:
             #return 0
             received = com_handle.read()
-            print received
+            print(received)
             print('&')
             sys.stdout.flush()
             if received == '1':
@@ -227,11 +233,11 @@ if __name__ == "__main__":
     # com_handle.write('pi\r')
     # com_handle.write('raspberry/r')
     # com_handle.write('cd /home')
-    my_input = raw_input('pause')
+    my_input = input('pause')
     com_handle.write(my_input+'\r')
-    my_input = raw_input('pause')
+    my_input = input('pause')
     com_handle.write(my_input+'\r')
-    my_input = raw_input('pause')
+    my_input = input('pause')
     com_handle.write(my_input+'\r')
     #com_handle.write('ls\r')
     com_handle.write('cd /home/crawler_gui\r')
@@ -239,9 +245,9 @@ if __name__ == "__main__":
 
     while True:
         time.sleep(0.3)
-        my_input = raw_input('pause')
-        print('sending:',my_input+'\r')
+        my_input = input('pause')
+        print(('sending:',my_input+'\r'))
         com_handle.write(my_input)
         data = com_handle.read(com_handle.inWaiting())
-        print 'read:',data
+        print('read:',data)
 

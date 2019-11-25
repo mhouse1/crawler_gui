@@ -7,6 +7,12 @@ Created on Nov 15, 2019
             Supported features: ability to list serial ports available, set active serial port,
                                 buffer messages to be sent into a queue and send using a parallel process
 '''
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import input
+from builtins import str
+from builtins import range
 import os, sys, glob
 
 import serial
@@ -14,7 +20,7 @@ from serial.tools import list_ports
 import time
 import multiprocessing
 import threading
-import Queue
+import queue
 import struct
 
 import data_parser
@@ -25,8 +31,8 @@ consumer_portname = None
 com_handle = None
 logged_in_into_user_side_radio = False
 
-fast_queue = Queue.Queue()
-slow_queue = Queue.Queue()
+fast_queue = queue.Queue()
+slow_queue = queue.Queue()
 stop_sending = False
 
 data_frame = {'incline':3, 'encoder1':3
@@ -166,10 +172,10 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
     #if the fast queue is not empty and stop_sending is not active.
     
     while True:
-        print '+',
+        print('+', end=' ')
         sys.stdout.flush()
         if not serial_activated:
-            print 'writer waiting for serial selection'
+            print('writer waiting for serial selection')
 
             #wait until consumer_portname is defined
             while consumer_portname is None:
@@ -182,7 +188,7 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
             # com_handle.write('raspberry/r/n')
             # com_handle.write('cd /home')
             com_handle.write('ls\r')
-            print('connected to ',consumer_portname)
+            print(('connected to ',consumer_portname))
             sys.stdout.flush()
 
             #enable code below to manually enter commands
@@ -214,20 +220,20 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
                 if not fast_queue.empty():
                     
                     message_to_send = fast_queue.get()
-                    print "TX: {} ENDTX".format(str(message_to_send))
+                    print("TX: {} ENDTX".format(str(message_to_send)))
                     tries = 0
                 #if no confirmation command processed send command again
                 if not data_parser.last_executed_command == message_to_send:
                     com_handle.write(message_to_send)
-                    print('txd:',message_to_send)
+                    print(('txd:',message_to_send))
                 else:
-                    print 'successfully executed', message_to_send
+                    print('successfully executed', message_to_send)
                     break
                 tries += 1
                 time.sleep(2)
             if tries >= transmit_attempts:
-                print 'TIMEDOUT, failed to execute:',message_to_send 
-                print 'Expected confirmation command processed'
+                print('TIMEDOUT, failed to execute:',message_to_send) 
+                print('Expected confirmation command processed')
                 
         time.sleep(0.5) 
         # while not slow_queue.empty() and fast_queue.empty() and not stop_sending and consumer_portname:
@@ -296,14 +302,14 @@ def set_reader():
     print ('reader waiting for serial selection')
     global stop_sending
     global data_frame
-    global robot_data
+    #global robot_data
     global logged_in_into_user_side_radio
 
     while com_handle is None:
         time.sleep(1)
         #print '=',
     print ('starting reader')
-    line = []
+    #line = []
     while True:
         time.sleep(0.3)
 
@@ -311,7 +317,7 @@ def set_reader():
         msg = data.decode('utf-8')
         if len(msg) > 0:
 
-            print'rd:',msg
+            print('rd:',msg)
             data_parser.interpret_data(msg.split('/r')[0])
             if 'Login incorrect' in msg or 'raspberrypi1 login:' in msg:
                 time.sleep(1)
@@ -337,7 +343,7 @@ def set_reader():
 if __name__ == "__main__":
     #print show_serial_ports()
 
-    print 'available ports',list_serial_ports()
+    print('available ports',list_serial_ports())
     #transmit('hello world')
     #start communication for reading and writing
 
@@ -356,4 +362,4 @@ if __name__ == "__main__":
         #print '#',
     
     print ('end of testing')
-    input('press enter to exit')
+    eval(input('press enter to exit'))
