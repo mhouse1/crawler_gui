@@ -52,6 +52,10 @@ class CrawlerGUI():
         #pass CfData cfg_file_handle because we want those items to be saved to cfg file too
         self.CNCConfigData = gui_support.CfgData(self.builder,self.cfg_file_handle)
 
+
+        self.inputKp = self.builder.get_object('entry1')
+        self.inputKi = self.builder.get_object('entry2')
+
         #labels
         self.batteryLevel       = self.builder.get_object('label24')
         self.distanceTraveled       = self.builder.get_object('label34')
@@ -147,16 +151,18 @@ class CrawlerGUI():
         '''
         set percentage of speed
         '''
-        Communications.SendCommand(2,int(widget.get_value()))
+        speed = int(widget.get_value())*4096/100
+        print('sending speed', str(speed))
+        Communications.SendCommand(2,speed)
     def on_speedScale1_value_changed(self,widget):
         '''
-        set percentage of speed
+        set percentage of Left/Right
         '''
-        Communications.SendCommand(3,int(widget.get_value()))
+        Communications.SendCommand(3,int(widget.get_value())*4096/100)
 
     def on_speedScale2_value_changed(self,widget):
         '''
-        set percentage of speed
+        set percentage of ramp rate
         '''
         Communications.SendCommand(9,int(widget.get_value()))
 
@@ -304,6 +310,19 @@ class CrawlerGUI():
         # Communications.com_handle.write('\x03')
         # time.sleep(1)
         # Communications.com_handle.write('sudo shutdown -r now')
+
+    def on_button14_clicked(self,widget):
+        '''
+        default kp = 0.01 and ki 
+        set kp to 0.1 and ki to 4 to for very fast response
+
+        use command 8 
+        '''
+        kp = self.inputKp.get_text()
+        ki = self.inputKi.get_text()
+        print('kp {} ki {}'.format(kp, ki))
+        Communications.SendCommand(6,int(float(kp)*1000))
+        Communications.SendCommand(7,int(float(ki)*1000))
 
     ###################### End of actions for all signals#################
     def _quit_program(self):
