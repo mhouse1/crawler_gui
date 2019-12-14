@@ -6,7 +6,7 @@ Created on Nov. 13, 2019
 @details    crawler GUI
 '''
 import gtk
-import time, os
+import time, os, sys
 from collections import OrderedDict 
 
 import Communications, data_parser
@@ -302,10 +302,18 @@ class CrawlerGUI():
     
     def on_shutdown_clicked(self,widget):
         '''
-        shut down the user side LoRa radio before disconnecting power
+        When the 'shutdown radio and quit GUI' button is clicked,
+        shut down the user side LoRa radio.
+        
+        Since the user side LoRa radio is a computer with its own OS
+        I recommended doing this before disconnecting the USB cable from the computer
         '''
         print('shutting down radio...')
-        Communications.com_handle.write('shutdown radio now')
+        try:
+            Communications.com_handle.write('shutdown radio now\r')
+        except:
+            pass
+        sys.exit(0)
         # time.sleep(1)
         # Communications.com_handle.write('\x03')
         # time.sleep(1)

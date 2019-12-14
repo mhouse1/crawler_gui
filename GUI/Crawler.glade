@@ -286,6 +286,12 @@
                                     <child>
                                       <placeholder/>
                                     </child>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -827,7 +833,7 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="shutdown">
-                                <property name="label" translatable="yes">shutdown GUI radio</property>
+                                <property name="label" translatable="yes">shutdown radio and quit GUI</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
@@ -882,6 +888,9 @@
                     <property name="can_focus">False</property>
                     <property name="n_rows">10</property>
                     <property name="n_columns">2</property>
+                    <child>
+                      <placeholder/>
+                    </child>
                     <child>
                       <object class="GtkLabel" id="label48">
                         <property name="visible">True</property>
@@ -1135,9 +1144,6 @@
                         <property name="top_attach">8</property>
                         <property name="bottom_attach">9</property>
                       </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
                     </child>
                     <child>
                       <object class="GtkButton" id="button14">
