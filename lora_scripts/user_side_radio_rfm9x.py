@@ -4,6 +4,10 @@
 @date            10/01/2019
 
 @details         Long Range Communication via LoRa rfm9x chips
+                 this script is meant for the user side radio
+                 the GUI loads this script, this script prints out all data 
+                 received from crawler side radio, this script also get_input() from GUI
+                 through the GUI USB serial communication 
 """
 # Import Python System Libraries
 import time, datetime, random, string, threading, sys, os
@@ -33,6 +37,7 @@ RESET = DigitalInOut(board.D25)
 spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
 rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, 915.0)
 rfm9x.tx_power = 23
+transceiver_enabled = True
 
 # Create the I2C interface.
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -54,6 +59,7 @@ def startLongRangeTransceiver():
     '''
     global rfm9x
     global display
+    global transceiver_enabled
 
     # Button A
     btnA = DigitalInOut(board.D5)
@@ -81,12 +87,13 @@ def startLongRangeTransceiver():
 
 
     enable_transmission_test = False
-    radio_fw_version = '0.5'
+    radio_fw_version = '0.7'
     print('starting Terrafirma Technology LoRa '+radio_fw_version)
-    while True:
+    while transceiver_enabled:
         packet = None
         # draw a box to clear the image
         display.fill(0)
+        #syntax for display.text('text to dispalay', column, row, ..)
         display.text('Terrafirma '+radio_fw_version, 0, 0, 1)
 
         # check for packet rx
@@ -154,17 +161,25 @@ def startLongRangeTransceiver():
 def get_input():
     '''
     get input from terminal, and send using LoRa 
+
+    when some button is pressed on the GUI, a command is sent from GUI and received by this function,
+    it is then transmitted to the crawler side LoRa radio
     '''
-    global rfm9x, display
+    global rfm9x, display, transceiver_enabled
 
     while True:
         message_to_send = input()
+
+        #if shutdown command received then display on OLED and execute shutdown
         if 'shutdown radio now' in message_to_send:
+            transceiver_enabled = False
             display.fill(0)
-            display.text('Ready to Unplug', 0, 0, 1)
+            display.text('Please wait for 5 Sec ', 0, 0, 1)
+            display.text('before diconnecting USB cable', 0, 10, 1)
             display.show()
-            os.system('sudo shutdown -r now')
-            sys.exit(0)
+            os.system('sudo shutdown now')
+            #os.system('sudo shutdown -r now')#restart only
+            sys.exit(0)#if 'shutdown now' command is executed it will never get here
 
         #print('sending:',message_to_send)
         rfm9x.send(bytes(message_to_send,"utf-8"))
@@ -180,4 +195,9 @@ if __name__ == '__main__':
     print("starting  data reader 123")
     reader_thread.start()
 
+    # transceiver_thread = threading.Thread(target = startLongRangeTransceiver)
+    # transceiver_thread.daemon = True #terminate when program ends
+    # print("user side transceiver_thread ready")
+    # transceiver_thread.start()
+    
     startLongRangeTransceiver()

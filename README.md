@@ -34,6 +34,21 @@ password: raspberry
 Using FileZilla to connect to raspberry
 Host: stfp://raspberrypi.local Username:pi Password:raspberry
 
+on mac to ssh to crawler side radio: 
+ssh pi@raspberrypi1.local
+password:raspberry
+
+on windows:
+connection to userside radio using winscp
+hostname:pi@raspberrypi1
+username:pi
+password: raspberry
+
+connection via putty to user side radio
+hostname:pi@raspberrypi1
+username:pi
+password:raspberry
+
 give your pi a unique hostname
 details:https://thepihut.com/blogs/raspberry-pi-tutorials/19668676-renaming-your-raspberry-pi-the-hostname
 

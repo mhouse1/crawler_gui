@@ -156,6 +156,7 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
     global com_handle
     global stop_sending
     global serial_activated
+    global logged_in_into_user_side_radio
 
     transmit_attempts = 10
     
@@ -203,11 +204,14 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
 
             serial_activated = True
             start_user_side_radio = True
-        elif start_user_side_radio:
+        elif start_user_side_radio or logged_in_into_user_side_radio :
+            #try starting the user side radio if serial just activated or if just logged in
             #com_handle.write('ls\r')
             com_handle.write('cd /home/crawler_gui/GUI\r')
             com_handle.write('python3 user_side_radio_rfm9x.py\r')
             start_user_side_radio = False
+            logged_in_into_user_side_radio = False
+
             #com_handle.write('ls\r')
             #data = 'ls'
 
