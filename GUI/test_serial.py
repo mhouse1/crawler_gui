@@ -21,6 +21,23 @@ import time
 import multiprocessing
 import threading
 import queue
+
+if 0:
+     import UserList
+     import UserString
+     import UserDict
+     import itertools
+     import collections
+     import future.backports.misc
+     import commands
+     import base64
+     import __buildin__
+     import math
+     import reprlib
+     import functools
+     import re
+     import subprocess
+
 #active_serial = None
 serial_activated = False
 consumer_portname = None

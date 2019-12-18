@@ -12,6 +12,22 @@ from collections import OrderedDict
 data_frame = None
 last_executed_command = None
 
+if 0:
+     import UserList
+     import UserString
+     import UserDict
+     import itertools
+     import collections
+     import future.backports.misc
+     import commands
+     import base64
+     import __buildin__
+     import math
+     import reprlib
+     import functools
+     import re
+     import subprocess
+
 crawler_commands = OrderedDict()
 
 def generate_crawler_comand(address, value):

@@ -7,6 +7,22 @@ Created on Sept 16, 2019
 '''
 import time, random
 
+if 0:
+     import UserList
+     import UserString
+     import UserDict
+     import itertools
+     import collections
+     import future.backports.misc
+     import commands
+     import base64
+     import __buildin__
+     import math
+     import reprlib
+     import functools
+     import re
+     import subprocess
+
 accelerometer_x = 0.0
 accelerometer_y = 0.0
 movement_forward = 0.0
