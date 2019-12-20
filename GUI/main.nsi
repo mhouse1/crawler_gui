@@ -3,6 +3,7 @@ Outfile "crawler.exe"
 InstallDir $APPDATA\crawler_gui
 
 Section Dependencies
+	SetOutPath $INSTDIR
 	File python-2.7.17.amd64.msi
 	File pygi-aio-3.24.1_rev1-setup.exe
 	ExecWait 'msiexec /i "$INSTDIR\python-2.7.17.amd64.msi"'
@@ -10,9 +11,7 @@ Section Dependencies
 SectionEnd
 
 Section
-
 	SetOutPath $INSTDIR
-
 	File bytestream0.txt
 	File Communications.py
 	File config.ini
