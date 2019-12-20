@@ -2,9 +2,14 @@ Outfile "crawler.exe"
 
 InstallDir $APPDATA\crawler_gui
 
-Section
+Section Dependencies
+	File python-2.7.17.amd64.msi
+	File pygi-aio-3.24.1_rev1-setup.exe
+	ExecWait 'msiexec /i "$INSTDIR\python-2.7.17.amd64.msi"'
+	ExecWait pygi-aio-3.24.1_rev1-setup.exe
+SectionEnd
 
-	#SetShellVarContext all
+Section
 
 	SetOutPath $INSTDIR
 
@@ -19,11 +24,12 @@ Section
 	File main.py
 	File simulate.py
 	File test_serial.py
-
+	File PyGTK2.24.0-legacy.zip
+	nsisunz::UnzipToLog "PyGTK2.24.0-legacy.zip" "C:\Python27\Lib\"
 	CreateShortCut "$DESKTOP\Crawler GUI.lnk" "$INSTDIR\main.py"
 	CreateShortCut "$SMPROGRAMS\Crawler GUI.lnk" "$INSTDIR\main.py"
-
 	WriteUninstaller "$INSTDIR\uninstall.exe"
+	CreateShortCut "$SMPROGRAMS\Uninstall Crawler GUI.lnk" "$INSTALLDIR\uninstall.exe"
 
 SectionEnd
 
@@ -43,5 +49,9 @@ Section "uninstall"
 	Delete "$INSTDIR\test_serial.py"
 	Delete "$DESKTOP\Crawler GUI.lnk"
 	Delete "$SMPROGRAMS\Crawler GUI.lnk"
+	Delete "$SMPROGRAMS\Uninstall Crawler GUI.lnk"
+	Delete "$INSTDIR\pygi-aio-3.24.1_rev1-setup.exe"
+	Delete "$INSTDIR\python-2.7.17.amd64.msi"
+	Delete "$INSTDIR\PyGTK2.24.0-legacy.zip"
 	
 SectionEnd
