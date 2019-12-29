@@ -228,7 +228,7 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
                     print 'successfully executed', message_to_send
                     break
                 tries += 1
-                time.sleep(0.5)
+                time.sleep(1.5) #determins how fast you want com_handle.write() to work
             if tries >= transmit_attempts:
                 print 'TIMEDOUT, failed to execute:',message_to_send 
                 print 'Expected confirmation command processed'
