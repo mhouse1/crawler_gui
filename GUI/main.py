@@ -332,6 +332,16 @@ class CrawlerGUI():
         Communications.SendCommand(6,int(float(kp)*1000))
         Communications.SendCommand(7,int(float(ki)*1000))
 
+    def on_button15_clicked(self,widget):
+        '''
+        clear timeout fault 
+
+        crawler expects a keep alive command every X seconds, if not received crawler will default to 
+        safe mode. in safe mode crawler stops running until it receives clear fault command and user disable and reenable run 
+        '''
+        print('clearing timeout fault')
+        Communications.SendCommand(11,0)
+
     ###################### End of actions for all signals#################
     def _quit_program(self):
         '''

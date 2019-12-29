@@ -292,6 +292,12 @@
                                     <child>
                                       <placeholder/>
                                     </child>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -889,9 +895,6 @@
                     <property name="n_rows">10</property>
                     <property name="n_columns">2</property>
                     <child>
-                      <placeholder/>
-                    </child>
-                    <child>
                       <object class="GtkLabel" id="label48">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -1156,6 +1159,19 @@
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="right_attach">2</property>
+                        <property name="top_attach">9</property>
+                        <property name="bottom_attach">10</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="button15">
+                        <property name="label" translatable="yes">clear timeout</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <signal name="clicked" handler="on_button15_clicked" swapped="no"/>
+                      </object>
+                      <packing>
                         <property name="top_attach">9</property>
                         <property name="bottom_attach">10</property>
                       </packing>
