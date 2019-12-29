@@ -27,6 +27,7 @@ import adafruit_rfm9x
 transmit_queue = queue.Queue()
 #data received
 receive_queue = queue.Queue()
+gui_command = None
 
 data_frame = {'incline':3
     }
@@ -87,7 +88,7 @@ def startLongRangeTransceiver():
 
 
     enable_transmission_test = False
-    radio_fw_version = '0.7'
+    radio_fw_version = 'B0.8'
     print('starting Terrafirma Technology LoRa '+radio_fw_version)
     while transceiver_enabled:
         packet = None
@@ -111,6 +112,8 @@ def startLongRangeTransceiver():
            
             try:
                 packet_text = str(packet, "utf-8")
+                #print the received data, since user side radio is configured as usb serial
+                #data_parser.interpret_data() will see this printed data and parse it
                 print('rcvd:',packet_text)
             except Exception as e:
                 #packet_text = 'failed to decode'
@@ -154,7 +157,6 @@ def startLongRangeTransceiver():
             print('dequeued:{}'.format(message_to_send))
             rfm9x.send(bytes(message_to_send,"utf-8"))
         
-        
         display.show()
         time.sleep(0.2)
 
@@ -164,11 +166,21 @@ def get_input():
 
     when some button is pressed on the GUI, a command is sent from GUI and received by this function,
     it is then transmitted to the crawler side LoRa radio
+
+    note: if you put the rmf9x.send in this function it means input() will not run again until rfm9x.send() is complete
     '''
-    global rfm9x, display, transceiver_enabled
+    global display, transceiver_enabled, gui_command
 
     while True:
         message_to_send = input()
+
+        #transmit using LoRA
+        print('usr:',message_to_send)
+        gui_command = message_to_send
+        # rfm9x.send(bytes(message_to_send,"utf-8"))
+        # display.fill(0)
+        # display.text(message_to_send, 0, 0, 1)
+        # display.show()
 
         #if shutdown command received then display on OLED and execute shutdown
         if 'shutdown radio now' in message_to_send:
@@ -181,11 +193,19 @@ def get_input():
             #os.system('sudo shutdown -r now')#restart only
             sys.exit(0)#if 'shutdown now' command is executed it will never get here
 
-        #print('sending:',message_to_send)
-        rfm9x.send(bytes(message_to_send,"utf-8"))
-        display.fill(0)
-        display.text(message_to_send, 0, 0, 1)
-        display.show()
+
+def send_gui_command():
+    '''
+    run this in a separate thread so rfm9x.send does not block rfm9x.receive
+
+    '''
+    global gui_command
+    while True:
+        if gui_command != None:
+            print('sent gui command:',gui_command)
+            rfm9x.send(bytes(gui_command,"utf-8"))
+            gui_command = None
+        time.sleep(1)
 
 if __name__ == '__main__':
 
@@ -194,6 +214,12 @@ if __name__ == '__main__':
     reader_thread.daemon = True #terminate when program ends
     print("starting  data reader 123")
     reader_thread.start()
+
+    #serial thread for reading
+    sender_thread = threading.Thread(target = send_gui_command)
+    sender_thread.daemon = True #terminate when program ends
+    print("stared command sender")
+    sender_thread.start()
 
     # transceiver_thread = threading.Thread(target = startLongRangeTransceiver)
     # transceiver_thread.daemon = True #terminate when program ends
