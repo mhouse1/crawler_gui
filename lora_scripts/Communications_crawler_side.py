@@ -195,7 +195,7 @@ def set_reader():
     line = []
     while True:
         #this is the rate we read serial data from FPGA, this will also determine the rate data from FPGA is sent to user GUI
-        time.sleep(2)
+        time.sleep(1.5)
         # received = com_handle.readline()
         # if received == '1':
         #     print('stop it!')
