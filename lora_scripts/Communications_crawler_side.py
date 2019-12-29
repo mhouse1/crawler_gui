@@ -194,7 +194,8 @@ def set_reader():
     print ('starting reader')
     line = []
     while True:
-        time.sleep(0.3)
+        #this is the rate we read serial data from FPGA, this will also determine the rate data from FPGA is sent to user GUI
+        time.sleep(2)
         # received = com_handle.readline()
         # if received == '1':
         #     print('stop it!')
@@ -207,7 +208,7 @@ def set_reader():
         msg = data.decode('utf-8')
         if len(msg) > 0:
 
-            print('read:',msg)
+            #print('read:',msg)
             #convert "read: Awake:c=0, r=0" into "parsed: ['c', '0, r', '0']"
             try:
                 data_frame['raw_data_from_fpga'] = msg

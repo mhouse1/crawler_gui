@@ -3,7 +3,8 @@
 @organisation    Terrafirma Technology, Inc.
 @date            10/01/2019
 
-@details         Long Range Communication via LoRa rfm9x chips
+@details         This script is meant for use on crawler side radio
+                Long Range Communication via LoRa rfm9x chips
                 includes serial thread
 """
 # Import Python System Libraries
@@ -69,13 +70,13 @@ def startLongRangeTransceiver():
 
     enable_transmission_test = False
     enable_transmitting_crawler_data = True
-    
-    print('starting Terrafirma Technology LoRa')
+    crawler_side_radio_fw_version = 'A0.2'
+    print('Crawler LoRa '+crawler_side_radio_fw_version)
     while True:
         packet = None
         # draw a box to clear the image
         display.fill(0)
-        display.text('v0.3', 0, 0, 1)
+        display.text(crawler_side_radio_fw_version, 0, 0, 1)
 
         # check for packet rx
         packet = rfm9x.receive()
@@ -138,10 +139,13 @@ def startLongRangeTransceiver():
             #print('dequeued:{}'.format(message_to_send))
             rfm9x.send(bytes(message_to_send,"utf-8"))
 
-        if enable_transmitting_crawler_data:
-            from_fpga =  Communications_crawler_side.data_frame['raw_data_from_fpga']
+        if enable_transmitting_crawler_data and (Communications_crawler_side.data_frame['raw_data_from_fpga'] != 'no new data'):
+            #in case raw_data_from_fpga receives two status in one string, example: 'Awake:c=(0,0,0,0), r=-6/rAwake:c=(0,0,0,0), r=-4/r'
+            #we split on the /r and use the last status for transmission
+            from_fpga =  Communications_crawler_side.data_frame['raw_data_from_fpga'].split('Awake:')[-1]
+            print('from fpga',from_fpga)
             Communications_crawler_side.data_frame['raw_data_from_fpga'] = 'no new data'
-            from_fpga = from_fpga[:-2]+'$'+Communications_crawler_side.data_frame['processed command']
+            from_fpga = from_fpga[:-2]+'$'+Communications_crawler_side.data_frame['processed command']#append last command processed
             rfm9x.send(bytes(str(from_fpga),"utf-8"))
             msg = "{}".format(from_fpga)
             #where text(string,x,y,column)
