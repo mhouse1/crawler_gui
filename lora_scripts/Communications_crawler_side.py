@@ -61,11 +61,12 @@ def transmit_to_crawler(message):
     for command in parsed_data:
         addr = int(command[0])
         val = int(command[1])
-        print('queued:',addr, val)
+        #print('queued:',addr, val)
         vv=struct.pack('Hh',addr,val)
         fast_queue.put(vv)
-    data_frame['processed command'] = message
-    print('processed command:',message)
+    if not message == 'cmd:10,0':
+        data_frame['processed command'] = message
+    #print('processed command:',message)
     return message
 
 def show_serial_ports():
@@ -154,8 +155,9 @@ def set_writer(baud_rate = 115200, bytesize = 8, timeout = 1, ):
     #if fast queue is not empty then send messages in the fast queue
     #until queue is empty. The slow queue will only send messages
     #if the fast queue is not empty and stop_sending is not active.
-    
+    keep_alive_counter = 0
     while True:
+        
         #print 'consumer active'
         while not fast_queue.empty():
             message_to_send = fast_queue.get()
@@ -171,6 +173,12 @@ def set_writer(baud_rate = 115200, bytesize = 8, timeout = 1, ):
             #it can set stop_sending, not the delay must be long enough so the buffer
             #does not overflow, and short enough so firmware does not run out of data to consume
             time.sleep(0.01)
+        # if keep_alive_counter > 1:
+        #     transmit_to_crawler('cmd:10,0')
+        #     keep_alive_counter= 0
+        # else:
+        #     keep_alive_counter += 1
+
             #set a delay for slow transfer queue
             #break out of delay early if detected fast_queue not empty
 #             for i in xrange(2):
@@ -224,7 +232,10 @@ def set_reader():
                 print('failed to parse')
                 print(str(Exception))
                         
-
+def keep_alive():
+    while True:
+        transmit_to_crawler('cmd:10,0')
+        time.sleep(1)
     
 if __name__ == "__main__":
     #print (show_serial_ports())
