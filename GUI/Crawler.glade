@@ -892,7 +892,7 @@
                   <object class="GtkTable" id="table11">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="n_rows">10</property>
+                    <property name="n_rows">11</property>
                     <property name="n_columns">2</property>
                     <child>
                       <object class="GtkLabel" id="label48">
@@ -1133,6 +1133,34 @@
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkButton" id="button14">
+                        <property name="label" translatable="yes">transmit Kp Ki</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <signal name="clicked" handler="on_button14_clicked" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                        <property name="top_attach">10</property>
+                        <property name="bottom_attach">11</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="button15">
+                        <property name="label" translatable="yes">clear timeout</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <signal name="clicked" handler="on_button15_clicked" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="top_attach">10</property>
+                        <property name="bottom_attach">11</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkEntry" id="entry2">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -1149,29 +1177,31 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="button14">
-                        <property name="label" translatable="yes">transmit Kp Ki</property>
+                      <object class="GtkEntry" id="entry3">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <signal name="clicked" handler="on_button14_clicked" swapped="no"/>
+                        <property name="invisible_char">●</property>
+                        <property name="text" translatable="yes">200.0</property>
+                        <property name="invisible_char_set">True</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
                       </object>
                       <packing>
-                        <property name="left_attach">1</property>
-                        <property name="right_attach">2</property>
                         <property name="top_attach">9</property>
                         <property name="bottom_attach">10</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="button15">
-                        <property name="label" translatable="yes">clear timeout</property>
+                      <object class="GtkLabel" id="label6">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <signal name="clicked" handler="on_button15_clicked" swapped="no"/>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Max PID output</property>
                       </object>
                       <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
                         <property name="top_attach">9</property>
                         <property name="bottom_attach">10</property>
                       </packing>
