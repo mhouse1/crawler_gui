@@ -16,6 +16,11 @@ for index, line in enumerate(tokenized_lines):
     print 'user:',user
     print 'process_id:',process_id
 
+#normally /etc/rc.local would launch the radio in the background via
+# #start lora tranceiver
+# cd /home/crawler_gui/GUI
+# sudo -H -u pi python3 /home/crawler_gui/GUI/serial_radio_rfm9x.py &
+
 #launch crawler side radio
 os.chdir('/home/crawler_gui/GUI/')
 os.system('python3 serial_radio_rfm9x.py')

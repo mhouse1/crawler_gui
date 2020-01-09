@@ -185,7 +185,8 @@ class CrawlerGUI():
         val = 0
         for index, key in enumerate(self.status_of_relays):
             #print key, self.status_of_relays[key]
-            val = val+((index+1)*self.status_of_relays[key])
+            #val = val+((index+1)*self.status_of_relays[key])
+            val = val + (pow(2,index) if self.status_of_relays[key] else 0)
         Communications.SendCommand(5,val)
 
     def on_button11_clicked(self,widget):
@@ -347,10 +348,13 @@ class CrawlerGUI():
         kp = self.inputKp.get_text()
         ki = self.inputKi.get_text()
         max_pid_output = self.inputMaxPIDOut.get_text()
+        deadzone_obj = self.builder.get_object('entry4')
+        deadzone = deadzone_obj.get_text()
         print('kp {} ki {}'.format(kp, ki))
         Communications.SendCommand(6,int(float(kp)*1000))
         Communications.SendCommand(7,int(float(ki)*1000))
         Communications.SendCommand(8,int(float(max_pid_output)*100))
+        Communications.SendCommand(12,int(float(deadzone)))
 
     def on_button15_clicked(self,widget):
         '''

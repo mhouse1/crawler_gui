@@ -72,7 +72,7 @@ def startLongRangeTransceiver():
 
     enable_transmission_test = False
     enable_transmitting_crawler_data = True
-    crawler_side_radio_fw_version = 'A0.4'
+    crawler_side_radio_fw_version = 'A0.8'
     print('Crawler LoRa '+crawler_side_radio_fw_version)
     while True:
         packet = None
@@ -142,21 +142,22 @@ def startLongRangeTransceiver():
             #print('dequeued:{}'.format(message_to_send))
             rfm9x.send(bytes(message_to_send,"utf-8"))
 
-        # if enable_transmitting_crawler_data and (Communications_crawler_side.data_frame['raw_data_from_fpga'] != 'no new data'):
-        #     #in case raw_data_from_fpga receives two status in one string, example: 'Awake:c=(0,0,0,0), r=-6/rAwake:c=(0,0,0,0), r=-4/r'
-        #     #we split on the /r and use the last status for transmission
-        #     from_fpga =  Communications_crawler_side.data_frame['raw_data_from_fpga'].split('Awake:')[-1]
-        #     from_fpga = from_fpga.split('\r')[0]
-        #     print('from fpga',from_fpga)
-        #     Communications_crawler_side.data_frame['raw_data_from_fpga'] = 'no new data'
-        #     from_fpga = from_fpga[:-2]+'$'+Communications_crawler_side.data_frame['processed command']#append last command processed
-        #     data = bytes(str(from_fpga),"utf-8")
-        #     if not len(data) >252:
-        #         rfm9x.send(data)
-            # msg = "{}".format(from_fpga)
-            # #where text(string,x,y,column)
-            # display.text(msg[:15], 0, 10, 1)
-            # display.text(msg[15:], 0, 20,1)
+        if enable_transmitting_crawler_data and (Communications_crawler_side.data_frame['raw_data_from_fpga'] != 'no new data'):
+            #in case raw_data_from_fpga receives two status in one string, example: 'Awake:c=(0,0,0,0), r=-6/rAwake:c=(0,0,0,0), r=-4/r'
+            #we split on the /r and use the last status for transmission
+            from_fpga =  Communications_crawler_side.data_frame['raw_data_from_fpga'].split('Awake:')[-1]
+            from_fpga = from_fpga.split('\r')[0]
+            #print('from fpga',from_fpga)
+            Communications_crawler_side.data_frame['raw_data_from_fpga'] = 'no new data'
+            from_fpga = from_fpga+'$'+Communications_crawler_side.data_frame['processed command']#append last command processed
+            print('Proc:',from_fpga)
+            data = bytes(str(from_fpga),"utf-8")
+            if not len(data) >252:
+                rfm9x.send(data)
+            msg = "{}".format(from_fpga)
+            #where text(string,x,y,column)
+            display.text(msg[:15], 0, 10, 1)
+            display.text(msg[15:], 0, 20,1)
 
         display.show()
 
