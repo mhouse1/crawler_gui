@@ -1,5 +1,6 @@
 Outfile "crawler.exe"
-
+# https://www.python.org/ftp/python/2.7.17/python-2.7.17.amd64.msi
+# https://sourceforge.net/projects/pygobjectwin32/files/pygi-aio-3.24.1_rev1-setup_049a323fe25432b10f7e9f543b74598d4be74a39.exe/download
 InstallDir $APPDATA\crawler_gui
 
 Section Dependencies
