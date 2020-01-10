@@ -10,6 +10,12 @@ Section Dependencies
 	ExecWait pygi-aio-3.24.1_rev1-setup.exe
 SectionEnd
 
+Section GTK2
+	File PyGTK2.24.0-legacy.zip
+	nsisunz::UnzipToLog "PyGTK2.24.0-legacy.zip" "$INSTDIR\PyGTK2.24.0"
+	ExecWait "$INSTDIR\instlib.bat"
+SectionEnd
+
 Section
 	SetOutPath $INSTDIR
 	File bytestream0.txt
@@ -23,8 +29,6 @@ Section
 	File main.py
 	File simulate.py
 	File test_serial.py
-	File PyGTK2.24.0-legacy.zip
-	nsisunz::UnzipToLog "PyGTK2.24.0-legacy.zip" "C:\Python27\Lib\"
 	CreateShortCut "$DESKTOP\Crawler GUI.lnk" "$INSTDIR\main.py"
 	CreateShortCut "$SMPROGRAMS\Crawler GUI.lnk" "$INSTDIR\main.py"
 	WriteUninstaller "$INSTDIR\uninstall.exe"
