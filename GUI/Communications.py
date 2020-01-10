@@ -152,7 +152,7 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
     global serial_activated
     global logged_in_into_user_side_radio
 
-    transmit_attempts = 10
+    transmit_attempts = 30
     
     # print 'waiting for serial selection'
     # while consumer_portname is None:
@@ -228,7 +228,7 @@ def set_writer(baud_rate = 19200, bytesize = 8, timeout = 1, ):
                     print 'successfully executed', message_to_send
                     break
                 tries += 1
-                time.sleep(2)
+                time.sleep(1.5) #determins how fast you want com_handle.write() to work
             if tries >= transmit_attempts:
                 print 'TIMEDOUT, failed to execute:',message_to_send 
                 print 'Expected confirmation command processed'

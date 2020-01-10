@@ -55,6 +55,7 @@ class CrawlerGUI():
 
         self.inputKp = self.builder.get_object('entry1')
         self.inputKi = self.builder.get_object('entry2')
+        self.inputMaxPIDOut = self.builder.get_object('entry3')
 
         #labels
         self.batteryLevel       = self.builder.get_object('label24')
@@ -184,7 +185,8 @@ class CrawlerGUI():
         val = 0
         for index, key in enumerate(self.status_of_relays):
             #print key, self.status_of_relays[key]
-            val = val+((index+1)*self.status_of_relays[key])
+            #val = val+((index+1)*self.status_of_relays[key])
+            val = val + (pow(2,index) if self.status_of_relays[key] else 0)
         Communications.SendCommand(5,val)
 
     def on_button11_clicked(self,widget):
@@ -325,12 +327,44 @@ class CrawlerGUI():
         set kp to 0.1 and ki to 4 to for very fast response
 
         use command 8 
+
+        settings:
+        speed 10%
+        Kp = .1
+        ki = 4.0
+        Max pid out = 10
+
+
+        CMD:2,163#6,50#7,2000#8,500#1,1#0,0#
+        max pid out = 5
+
+
+        got it working at
+        .4 = kp
+        4 = ki
+        3 =max pid output
+        speed = 7
         '''
         kp = self.inputKp.get_text()
         ki = self.inputKi.get_text()
+        max_pid_output = self.inputMaxPIDOut.get_text()
+        deadzone_obj = self.builder.get_object('entry4')
+        deadzone = deadzone_obj.get_text()
         print('kp {} ki {}'.format(kp, ki))
         Communications.SendCommand(6,int(float(kp)*1000))
         Communications.SendCommand(7,int(float(ki)*1000))
+        Communications.SendCommand(8,int(float(max_pid_output)*100))
+        Communications.SendCommand(12,int(float(deadzone)))
+
+    def on_button15_clicked(self,widget):
+        '''
+        clear timeout fault 
+
+        crawler expects a keep alive command every X seconds, if not received crawler will default to 
+        safe mode. in safe mode crawler stops running until it receives clear fault command and user disable and reenable run 
+        '''
+        print('clearing timeout fault')
+        Communications.SendCommand(11,0)
 
     ###################### End of actions for all signals#################
     def _quit_program(self):

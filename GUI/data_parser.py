@@ -52,10 +52,10 @@ def interpret_data(raw_data = None):
     data = raw_data
     copy_raw_data = raw_data
     backup_data = data_frame
-    if 'Awake:' in raw_data:
+    if '$' in raw_data:
         split_into_status_and_last_executed = raw_data.split('$')
         last_executed_command = split_into_status_and_last_executed[1][:-1]
-        data=split_into_status_and_last_executed[0].split('Awake:')[1]
+        #data=split_into_status_and_last_executed[0].split('Awake:')[1]
         data=split_into_status_and_last_executed[0].split('/r')[0]
         #print 'last_executed_command',last_executed_command
         try:

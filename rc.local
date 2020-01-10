@@ -23,8 +23,8 @@ fi
 #sudo -H -u pi python /home/pi_zero_osd/test8.py &
 
 #start lora tranceiver
-cd /home/crawler_gui/GUI
-sudo -H -u pi python3 /home/crawler_gui/GUI/serial_radio_rfm9x.py &
+#cd /home/lora
+#sudo -H -u pi python3 /home/lora/radio-rfm9x.py &
 
 exit 0
 

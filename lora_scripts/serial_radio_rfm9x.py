@@ -3,7 +3,8 @@
 @organisation    Terrafirma Technology, Inc.
 @date            10/01/2019
 
-@details         Long Range Communication via LoRa rfm9x chips
+@details         This script is meant for use on crawler side radio
+                Long Range Communication via LoRa rfm9x chips
                 includes serial thread
 """
 # Import Python System Libraries
@@ -25,6 +26,13 @@ import Communications_crawler_side
 transmit_queue = queue.Queue()
 #data received
 receive_queue = queue.Queue()
+
+# Configure LoRa Radio
+CS = DigitalInOut(board.CE1)
+RESET = DigitalInOut(board.D25)
+spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, 915.0)
+rfm9x.tx_power = 23
 
 def randomString(stringLength=10):
     """Generate a random string of fixed length """
@@ -59,23 +67,18 @@ def startLongRangeTransceiver():
     width = display.width
     height = display.height
 
-    # Configure LoRa Radio
-    CS = DigitalInOut(board.CE1)
-    RESET = DigitalInOut(board.D25)
-    spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-    rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, 915.0)
-    rfm9x.tx_power = 23
+
     prev_packet = None
 
     enable_transmission_test = False
     enable_transmitting_crawler_data = True
-    
-    print('starting Terrafirma Technology LoRa')
+    crawler_side_radio_fw_version = 'A0.8'
+    print('Crawler LoRa '+crawler_side_radio_fw_version)
     while True:
         packet = None
         # draw a box to clear the image
         display.fill(0)
-        display.text('v0.3', 0, 0, 1)
+        display.text(crawler_side_radio_fw_version, 0, 0, 1)
 
         # check for packet rx
         packet = rfm9x.receive()
@@ -94,13 +97,14 @@ def startLongRangeTransceiver():
             try:
                 print('received:',str(packet),'\n')
                 packet_text = str(prev_packet, "utf-8")
+                Communications_crawler_side.transmit_to_crawler(packet_text)
+
             except Exception as e:
                 packet_text = 'failed to decode'+str(e)
                 print('error detected:' ,e,)
 
-            Communications_crawler_side.transmit_to_crawler(packet_text)
-            display.text(packet_text, 0, 0, 1)
-            display.show()
+            # display.text(packet_text, 0, 0, 1)
+            # display.show()
 
 
         if not btnA.value:
@@ -138,11 +142,18 @@ def startLongRangeTransceiver():
             #print('dequeued:{}'.format(message_to_send))
             rfm9x.send(bytes(message_to_send,"utf-8"))
 
-        if enable_transmitting_crawler_data:
-            from_fpga =  Communications_crawler_side.data_frame['raw_data_from_fpga']
+        if enable_transmitting_crawler_data and (Communications_crawler_side.data_frame['raw_data_from_fpga'] != 'no new data'):
+            #in case raw_data_from_fpga receives two status in one string, example: 'Awake:c=(0,0,0,0), r=-6/rAwake:c=(0,0,0,0), r=-4/r'
+            #we split on the /r and use the last status for transmission
+            from_fpga =  Communications_crawler_side.data_frame['raw_data_from_fpga'].split('Awake:')[-1]
+            from_fpga = from_fpga.split('\r')[0]
+            #print('from fpga',from_fpga)
             Communications_crawler_side.data_frame['raw_data_from_fpga'] = 'no new data'
-            from_fpga = from_fpga[:-2]+'$'+Communications_crawler_side.data_frame['processed command']
-            rfm9x.send(bytes(str(from_fpga),"utf-8"))
+            from_fpga = from_fpga+'$'+Communications_crawler_side.data_frame['processed command']#append last command processed
+            print('Proc:',from_fpga)
+            data = bytes(str(from_fpga),"utf-8")
+            if not len(data) >252:
+                rfm9x.send(data)
             msg = "{}".format(from_fpga)
             #where text(string,x,y,column)
             display.text(msg[:15], 0, 10, 1)
@@ -152,6 +163,26 @@ def startLongRangeTransceiver():
 
         time.sleep(0.1)
 
+# def send_raw_data_from_fpga():
+#     '''
+#     run this in its own thread
+
+#     send raw data from fpga using radio to user side radio
+#     '''
+#     global rfm9x
+#     print("starting radio_send")
+
+#     while True:
+#         if (Communications_crawler_side.data_frame['raw_data_from_fpga'] != 'no new data'):
+#             #in case raw_data_from_fpga receives two status in one string, example: 'Awake:c=(0,0,0,0), r=-6/rAwake:c=(0,0,0,0), r=-4/r'
+#             #we split on the /r and use the last status for transmission
+#             from_fpga =  Communications_crawler_side.data_frame['raw_data_from_fpga'].split('Awake:')[-1]
+#             print('from fpga',from_fpga)
+#             Communications_crawler_side.data_frame['raw_data_from_fpga'] = 'no new data'
+#             from_fpga = from_fpga[:-2]+'$'+Communications_crawler_side.data_frame['processed command']#append last command processed
+#             rfm9x.send(bytes(str(from_fpga),"utf-8"))
+#         time.sleep(1)
+
 if __name__ == '__main__':
     #Communications.consumer_portname =  Communications.show_serial_ports()[0]
     Communications_crawler_side.consumer_portname =  r'/dev/serial0'
@@ -159,14 +190,24 @@ if __name__ == '__main__':
     #serial thread for reading
     serial_thread_read = threading.Thread(target = Communications_crawler_side.set_reader)
     serial_thread_read.daemon = True #terminate when program ends
-    print("starting data simulation")
+    print("starting serial read thread")
     serial_thread_read.start()
 
     #serial thread for writing
     serial_thread_write = threading.Thread(target = Communications_crawler_side.set_writer)
     serial_thread_write.daemon = True #terminate when program ends
-    print("starting data simulation")
+    print("starting serial write thread")
     serial_thread_write.start()
 
+    #serial thread for writing
+    thread_keep_alive = threading.Thread(target = Communications_crawler_side.keep_alive)
+    thread_keep_alive.daemon = True #terminate when program ends
+    print("starting keep alive thread")
+    thread_keep_alive.start()
+
+    # # thread for transmitting data using lora
+    # radio_send = threading.Thread(target = send_raw_data_from_fpga)
+    # radio_send.daemon = True #terminate when program ends
+    # radio_send.start()
 
     startLongRangeTransceiver()
