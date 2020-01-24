@@ -5,7 +5,7 @@ import shutil
 # recursively merge two folders including subfolders
 # from https://lukelogbook.tech/2018/01/25/merging-two-folders-in-python/
 def mergefolders(root_src_dir, root_dst_dir):
-    for src_dir, dirs, files in os.walk(root_src_dir):
+    for src_dir, _, files in os.walk(root_src_dir):
         dst_dir = src_dir.replace(root_src_dir, root_dst_dir, 1)
         if not os.path.exists(dst_dir):
             os.makedirs(dst_dir)
